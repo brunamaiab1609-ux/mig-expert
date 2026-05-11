@@ -1,0 +1,2930 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIG Expert Study Dashboard</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+      --color-bg:#f7f6f2; --color-surface:#f9f8f5; --color-surface-2:#fbfbf9; --color-surface-offset:#f3f0ec; --color-border:#d4d1ca; --color-text:#28251d; --color-text-muted:#7a7974; --color-primary:#01696f; --color-primary-hover:#0c4e54; --color-success:#437a22; --color-blue:#006494; --color-gold:#d19900; --color-warning:#964219; --color-purple:#7a39bb; --shadow-sm:0 1px 2px rgba(40,37,29,.06); --shadow-md:0 10px 30px rgba(40,37,29,.08); --radius-md:.75rem; --radius-lg:1rem; --radius-xl:1.25rem; --font-display:'Satoshi', sans-serif; --font-body:'General Sans', sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg:#171614; --color-surface:#1c1b19; --color-surface-2:#201f1d; --color-surface-offset:#22211f; --color-border:#393836; --color-text:#cdccca; --color-text-muted:#979591; --color-primary:#4f98a3; --color-primary-hover:#227f8b; --color-success:#6daa45; --color-blue:#5591c7; --color-gold:#e8af34; --color-warning:#bb653b; --color-purple:#a86fdf; --shadow-sm:0 1px 2px rgba(0,0,0,.2); --shadow-md:0 12px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:var(--font-body);background:var(--color-bg);color:var(--color-text);font-size:var(--text-base);line-height:1.55}
+    button,input,select,textarea{font:inherit;color:inherit}
+    button{cursor:pointer;border:none;background:none}
+    .app{display:grid;grid-template-columns:300px 1fr;grid-template-rows:72px 1fr;height:100dvh}
+    .sidebar{grid-row:1 / -1;background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));border-right:1px solid var(--color-border);padding:var(--space-6);overflow:auto}
+    .header{grid-column:2;display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-6);border-bottom:1px solid var(--color-border);background:rgba(249,248,245,.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:5}
+    [data-theme="dark"] .header{background:rgba(28,27,25,.85)}
+    .main{grid-column:2;overflow:auto;padding:var(--space-6)}
+    .brand{display:flex;gap:var(--space-3);align-items:center;margin-bottom:var(--space-8)}
+    .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--color-primary),var(--color-blue));display:grid;place-items:center;color:white;box-shadow:var(--shadow-md)}
+    .brand h1{font-family:var(--font-display);font-size:var(--text-lg);line-height:1.05}
+    .brand p,.muted{color:var(--color-text-muted);font-size:var(--text-sm)}
+    .nav-section{margin-bottom:var(--space-8)}
+    .nav-title{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.12em;color:var(--color-text-muted);margin-bottom:var(--space-3)}
+    .nav-btn{width:100%;text-align:left;padding:.85rem 1rem;border-radius:12px;margin-bottom:.4rem;color:var(--color-text);display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+    .nav-btn.active,.nav-btn:hover{background:var(--color-surface-offset)}
+    .pill{display:inline-flex;align-items:center;padding:.25rem .55rem;border-radius:999px;font-size:var(--text-xs);background:rgba(1,105,111,.1);color:var(--color-primary);font-weight:700;white-space:nowrap}
+    .pill.gold{background:rgba(209,153,0,.12);color:var(--color-gold)}
+    .pill.blue{background:rgba(0,100,148,.12);color:var(--color-blue)}
+    .pill.success{background:rgba(67,122,34,.12);color:var(--color-success)}
+    .pill.warning{background:rgba(150,66,25,.12);color:var(--color-warning)}
+    .pill.purple{background:rgba(122,57,187,.12);color:var(--color-purple)}
+    .pill.muted{background:var(--color-surface-offset);color:var(--color-text-muted)}
+    .header-left h2{font-family:var(--font-display);font-size:var(--text-xl);line-height:1.05}
+    .header-actions{display:flex;gap:.75rem;align-items:center}
+    .btn{padding:.7rem .95rem;border-radius:12px;background:var(--color-surface-offset);border:1px solid var(--color-border);font-size:var(--text-sm)}
+    .btn.primary{background:var(--color-primary);color:white;border-color:transparent}
+    .btn.primary:hover{background:var(--color-primary-hover)}
+    .btn.ghost{background:transparent}
+    .btn.success{background:var(--color-success);color:white;border-color:transparent}
+    .btn.success:hover{filter:brightness(1.05)}
+    .btn.warn{background:transparent;color:var(--color-warning);border-color:var(--color-warning)}
+    .grid{display:grid;gap:var(--space-5)}
+    .kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:var(--space-6)}
+    .card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm)}
+    .card.pad{padding:var(--space-5)}
+    .card.highlight{border:2px solid var(--color-primary);box-shadow:0 12px 28px rgba(1,105,111,.18)}
+    .kpi .label{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-muted);margin-bottom:.35rem}
+    .kpi .value{font-family:var(--font-display);font-size:var(--text-xl);font-weight:900}
+    .kpi .sub{font-size:var(--text-sm);color:var(--color-text-muted)}
+    .layout{display:grid;grid-template-columns:1.45fr .95fr;gap:var(--space-5)}
+    .section-title{font-family:var(--font-display);font-size:var(--text-lg);margin-bottom:var(--space-4)}
+    .section-sub{font-size:var(--text-sm);color:var(--color-text-muted);margin-top:-.6rem;margin-bottom:var(--space-4)}
+    .week-list{display:grid;gap:.85rem}
+    .week-item{padding:1rem;border-radius:14px;border:1px solid var(--color-border);background:var(--color-surface-2);display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start;transition:border-color .2s, box-shadow .2s}
+    .week-item.current{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(1,105,111,.15)}
+    .week-num{width:40px;height:40px;border-radius:12px;background:var(--color-surface-offset);display:grid;place-items:center;font-weight:800;color:var(--color-primary)}
+    .week-item.current .week-num{background:var(--color-primary);color:white}
+    .week-item h4{font-size:1rem;margin-bottom:.25rem;font-family:var(--font-display)}
+    .week-item p{font-size:var(--text-sm);color:var(--color-text-muted)}
+    .progress{height:10px;background:var(--color-surface-offset);border-radius:999px;overflow:hidden;margin-top:.55rem}
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-blue));border-radius:999px}
+    .check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}
+    .check-item{display:flex;gap:.75rem;align-items:flex-start;padding:1rem;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface-2)}
+    .check-item input{margin-top:.2rem;accent-color:var(--color-primary);width:18px;height:18px}
+    .check-item strong{display:block;font-size:var(--text-sm)}
+    .check-item span{display:block;font-size:var(--text-xs);color:var(--color-text-muted)}
+    .daily-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.85rem}
+    .day-card{padding:1rem;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface-2);min-height:190px}
+    .day-card h4{font-size:var(--text-sm);margin-bottom:.65rem;font-family:var(--font-display)}
+    .task{font-size:var(--text-xs);padding:.55rem .65rem;border-radius:10px;background:var(--color-surface-offset);margin-bottom:.45rem;border-left:3px solid var(--color-primary)}
+    .task.pitch{border-left-color:var(--color-gold)} .task.present{border-left-color:var(--color-blue)} .task.review{border-left-color:var(--color-success)}
+    .notes{width:100%;min-height:140px;padding:1rem;border-radius:14px;border:1px solid var(--color-border);background:var(--color-surface-2);resize:vertical;font-family:var(--font-body)}
+    .tag-row{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.8rem}
+    .tag{font-size:var(--text-xs);padding:.35rem .55rem;border-radius:999px;background:var(--color-surface-offset);color:var(--color-text-muted)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);margin-top:var(--space-5)}
+    .three-col{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5)}
+    .legend{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
+    .legend span{font-size:var(--text-xs);color:var(--color-text-muted);display:flex;align-items:center;gap:.35rem}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .panel{display:none}.panel.active{display:block;animation:fade .25s ease}
+    @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .footer-note{margin-top:var(--space-5);font-size:var(--text-sm);color:var(--color-text-muted)}
+    .mini{font-size:var(--text-xs);color:var(--color-text-muted)}
+    .quote{padding:1rem;border-radius:14px;background:linear-gradient(135deg,rgba(1,105,111,.08),rgba(0,100,148,.08));border:1px solid var(--color-border)}
+
+    /* Streak / gamificação */
+    .streak-card{background:linear-gradient(135deg,rgba(1,105,111,.07),rgba(209,153,0,.08));border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5)}
+    .streak-top{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-4);flex-wrap:wrap}
+    .streak-flame{font-size:2.4rem;line-height:1}
+    .streak-number{font-family:var(--font-display);font-size:2.4rem;font-weight:900;line-height:1}
+    .streak-label{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-top:.35rem}
+    .week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-top:var(--space-4)}
+    .day-cell{aspect-ratio:1/1;border-radius:10px;border:1px solid var(--color-border);background:var(--color-surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:var(--text-xs);color:var(--color-text-muted);position:relative}
+    .day-cell .dnum{font-family:var(--font-display);font-weight:700;color:var(--color-text);font-size:.95rem;margin-top:.1rem}
+    .day-cell.done{background:linear-gradient(135deg,var(--color-primary),var(--color-blue));border-color:transparent;color:white}
+    .day-cell.done .dnum{color:white}
+    .day-cell.today{outline:2px solid var(--color-gold);outline-offset:2px}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-top:var(--space-4)}
+    .pillar{padding:.75rem;border-radius:12px;border:1px solid var(--color-border);background:var(--color-surface-2);font-size:var(--text-xs)}
+    .pillar strong{display:block;font-size:var(--text-sm);margin-bottom:.2rem;font-family:var(--font-display)}
+    .pillar.p1{border-left:3px solid var(--color-primary)}
+    .pillar.p2{border-left:3px solid var(--color-blue)}
+    .pillar.p3{border-left:3px solid var(--color-gold)}
+    .streak-actions{display:flex;gap:.5rem;margin-top:var(--space-4);flex-wrap:wrap}
+    .status-msg{margin-top:var(--space-3);font-size:var(--text-sm)}
+    .progress.gold > span{background:linear-gradient(90deg,var(--color-gold),var(--color-warning))}
+
+    /* Tradução por público */
+    .audience-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:var(--space-4)}
+    .audience-tab{padding:.5rem .85rem;border-radius:999px;border:1px solid var(--color-border);background:var(--color-surface-2);font-size:var(--text-xs);font-weight:600}
+    .audience-tab.active{background:var(--color-primary);color:white;border-color:transparent}
+    .audience-block{display:none}
+    .audience-block.active{display:grid;gap:var(--space-3)}
+    .bullet-list{margin:0;padding-left:1.1rem}
+    .bullet-list li{font-size:var(--text-sm);margin-bottom:.3rem;color:var(--color-text)}
+    .qa-list{display:grid;gap:.5rem}
+    .qa-list .q{font-size:var(--text-sm);font-weight:600}
+    .qa-list .a{font-size:var(--text-xs);color:var(--color-text-muted);padding-left:.6rem;border-left:2px solid var(--color-primary);margin-top:.15rem}
+
+    /* Week deep card */
+    .week-deep{padding:var(--space-5);border:1px solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);margin-bottom:var(--space-5)}
+    .week-deep header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:var(--space-3)}
+    .week-deep h3{font-family:var(--font-display);font-size:var(--text-lg);margin-bottom:.25rem}
+    .week-deep .obj{font-size:var(--text-sm);color:var(--color-text-muted)}
+    .sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-top:var(--space-3)}
+    .sub-grid h5{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-bottom:.5rem}
+    .media-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin-top:var(--space-3)}
+    .media-card{padding:.85rem;border-radius:12px;border:1px solid var(--color-border);background:var(--color-surface-2);font-size:var(--text-xs)}
+    .media-card .mtype{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-bottom:.3rem;font-weight:700}
+    .media-card .mtitle{font-size:var(--text-sm);font-weight:600;margin-bottom:.25rem;line-height:1.3}
+    .media-card .mfocus{color:var(--color-text-muted);font-size:var(--text-xs)}
+
+    /* Glossary */
+    .glossary{display:grid;grid-template-columns:repeat(2,1fr);gap:.65rem}
+    .term{padding:.7rem .85rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-2);transition:border-color .15s, box-shadow .15s}
+    .term:hover{border-color:var(--color-primary)}
+    .term.expanded{box-shadow:0 4px 14px rgba(1,105,111,.12)}
+    .term-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;cursor:pointer;user-select:none}
+    .term-head strong{font-family:var(--font-display);font-size:var(--text-sm);color:var(--color-primary);flex:1}
+    .term-caret{font-size:.7rem;color:var(--color-text-muted);transition:transform .2s}
+    .term.expanded .term-caret{transform:rotate(90deg);color:var(--color-primary)}
+    .term-body{display:none;margin-top:.45rem;padding-top:.45rem;border-top:1px dashed var(--color-border)}
+    .term.expanded .term-body{display:block;animation:fade .2s ease}
+    .term-body p{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.5}
+    .term-actions{display:flex;gap:.35rem;margin-top:.55rem}
+    .term-actions button{font-size:var(--text-xs);padding:.3rem .55rem;border-radius:8px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text-muted)}
+    .term-actions button:hover{color:var(--color-primary);border-color:var(--color-primary)}
+    .term-actions button.danger:hover{color:var(--color-warning);border-color:var(--color-warning)}
+    .term-edit{display:none;flex-direction:column;gap:.4rem;margin-top:.45rem}
+    .term.editing .term-edit{display:flex}
+    .term.editing .term-body,.term.editing .term-head{display:none}
+    .term-edit input,.term-edit textarea{width:100%;padding:.5rem .65rem;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text)}
+    .term-edit textarea{min-height:70px;resize:vertical;font-size:var(--text-xs)}
+    .term-edit-actions{display:flex;gap:.4rem;justify-content:flex-end}
+    .glossary-toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:var(--space-3)}
+    .glossary-search{flex:1;min-width:200px;padding:.6rem .85rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-2);font-size:var(--text-sm);color:var(--color-text)}
+    .term-badge{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--color-gold);font-weight:700;padding:.15rem .4rem;border-radius:6px;background:rgba(209,153,0,.12);margin-left:.4rem}
+
+    /* Audience overview */
+    .audience-card{padding:var(--space-4);border:1px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface-2)}
+    .audience-card h4{font-family:var(--font-display);font-size:1rem;margin-bottom:.2rem}
+    .audience-card .role{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:.6rem}
+    .audience-card ul{margin:0;padding-left:1.1rem}
+    .audience-card li{font-size:var(--text-xs);color:var(--color-text);margin-bottom:.25rem}
+
+    @media (max-width: 1100px){
+      .app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}
+      .sidebar{grid-row:auto;border-right:none;border-bottom:1px solid var(--color-border)}
+      .header,.main{grid-column:auto}
+      .kpi-grid,.layout,.two-col,.three-col,.check-grid,.daily-grid,.sub-grid,.media-grid,.glossary,.pillars{grid-template-columns:1fr}
+      .week-strip{grid-template-columns:repeat(7,1fr)}
+    }
+    /* ===== Histórico de pilares (heatmap) ===== */
+    .hm-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:.4rem;max-width:560px}
+    .hm-cell{aspect-ratio:1/1;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface-2);position:relative;cursor:default}
+    .hm-cell.hm-0{background:var(--color-surface-2)}
+    .hm-cell.hm-1{background:color-mix(in srgb,var(--color-primary) 22%,var(--color-surface-2))}
+    .hm-cell.hm-2{background:color-mix(in srgb,var(--color-primary) 55%,var(--color-surface-2))}
+    .hm-cell.hm-3{background:var(--color-primary);border-color:transparent}
+    .hm-cell.hm-today{outline:2px solid var(--color-warning);outline-offset:1px}
+    .hm-cell.hm-future{opacity:.35}
+    .hm-cell .hm-tip{position:absolute;bottom:115%;left:50%;transform:translateX(-50%);background:var(--color-surface);border:1px solid var(--color-border);border-radius:6px;padding:.4rem .55rem;font-size:11px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:5;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+    .hm-cell:hover .hm-tip{opacity:1}
+    .hm-legend{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-top:.9rem}
+    .hm-legend .hm-cell{width:14px;height:14px;aspect-ratio:auto;cursor:default}
+    .pillar-bd{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-3);margin-top:.6rem}
+    .pillar-bd .pb-item{border:1px solid var(--color-border);border-radius:10px;padding:.85rem 1rem;background:var(--color-surface-2)}
+    .pillar-bd .pb-name{font-weight:600;font-size:var(--text-sm);margin-bottom:.3rem}
+    .pillar-bd .pb-bar{height:8px;border-radius:999px;background:var(--color-surface-3,var(--color-border));overflow:hidden;margin-top:.5rem}
+    .pillar-bd .pb-fill{height:100%;background:var(--color-primary);border-radius:999px;transition:width .25s}
+
+    /* ===== Flashcards ===== */
+    .fc-controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:end;margin:var(--space-4) 0}
+    .fc-controls select,.fc-controls input{margin-top:.25rem;padding:.45rem .6rem;border-radius:8px;border:1px solid var(--color-border);background:var(--color-surface-2);color:inherit;font-size:var(--text-sm)}
+    .fc-stage{margin-top:var(--space-3);display:flex;flex-direction:column;align-items:stretch;gap:var(--space-3)}
+    .fc-counter{align-self:flex-start}
+    .fc-card{width:100%;max-width:640px;min-height:280px;cursor:pointer;outline:none;position:relative;border-radius:14px;border:1px solid var(--color-border);background:var(--color-surface);box-shadow:0 4px 14px rgba(0,0,0,.06);transition:transform .12s}
+    .fc-card:hover{transform:translateY(-1px)}
+    .fc-card:focus-visible{box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 35%,transparent)}
+    .fc-face{padding:1.4rem 1.6rem;display:none;flex-direction:column;gap:.8rem;min-height:280px}
+    .fc-face.active{display:flex}
+    .fc-face.fc-back{background:linear-gradient(135deg,var(--color-surface),var(--color-surface-2));border-radius:14px}
+    .fc-meta{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+    .fc-q{font-size:var(--text-xl);font-weight:600;line-height:1.4;flex:1}
+    .fc-a{font-size:var(--text-md);line-height:1.55;flex:1;white-space:pre-wrap}
+    .fc-hint{opacity:.65;margin-top:auto;text-align:right}
+    .fc-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+    .fc-progress{align-self:flex-start;opacity:.75}
+    .fc-empty{padding:2rem;text-align:center;border:1px dashed var(--color-border);border-radius:12px;color:var(--color-text-muted,var(--color-text))}
+    .fc-status-badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:11px;font-weight:600;margin-left:.4rem}
+    .fc-status-badge.todo{background:var(--color-surface-2);color:var(--color-text)}
+    .fc-status-badge.review{background:color-mix(in srgb,var(--color-warning) 25%,var(--color-surface-2));color:var(--color-warning)}
+    .fc-status-badge.known{background:color-mix(in srgb,var(--color-success) 25%,var(--color-surface-2));color:var(--color-success)}
+
+    /* ===== Apresentações reais ===== */
+    .pres-form{margin-top:var(--space-4);padding:1rem 1.1rem;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface-2)}
+    .pres-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.85rem}
+    .pres-grid label.full{grid-column:1/-1}
+    .pres-form input,.pres-form select,.pres-form textarea{margin-top:.25rem;width:100%;padding:.55rem .65rem;border-radius:8px;border:1px solid var(--color-border);background:var(--color-surface);color:inherit;font:inherit;font-size:var(--text-sm)}
+    .pres-form textarea{resize:vertical;min-height:60px}
+    .pres-actions{display:flex;gap:.5rem;margin-top:.9rem;flex-wrap:wrap}
+    .pres-list{display:flex;flex-direction:column;gap:.7rem;margin-top:.5rem}
+    .pres-item{border:1px solid var(--color-border);border-radius:10px;padding:.85rem 1rem;background:var(--color-surface-2);display:grid;grid-template-columns:1fr auto;gap:.5rem .9rem;align-items:start}
+    .pres-item .pres-head{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+    .pres-item .pres-topic{font-weight:600}
+    .pres-item .pres-meta{font-size:11px;opacity:.75}
+    .pres-item .pres-body{grid-column:1/-1;font-size:var(--text-sm);line-height:1.5}
+    .pres-item .pres-body p{margin:.25rem 0;white-space:pre-wrap}
+    .pres-item .pres-body strong{font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.7;margin-right:.4rem}
+    .pres-item .pres-actions-row{display:flex;gap:.4rem;flex-wrap:wrap}
+    .pres-item .btn{padding:.4rem .65rem;font-size:11px;border-radius:8px}
+    .pres-score{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;border-radius:8px;font-weight:700;font-size:var(--text-sm)}
+    .pres-score.s5{background:color-mix(in srgb,var(--color-success) 30%,var(--color-surface));color:var(--color-success)}
+    .pres-score.s4{background:color-mix(in srgb,var(--color-success) 20%,var(--color-surface));color:var(--color-success)}
+    .pres-score.s3{background:color-mix(in srgb,var(--color-warning) 22%,var(--color-surface));color:var(--color-warning)}
+    .pres-score.s2{background:color-mix(in srgb,var(--color-danger,#d04545) 22%,var(--color-surface));color:var(--color-danger,#d04545)}
+    .pres-score.s1{background:color-mix(in srgb,var(--color-danger,#d04545) 30%,var(--color-surface));color:var(--color-danger,#d04545)}
+    .pres-empty{padding:1.4rem;text-align:center;border:1px dashed var(--color-border);border-radius:10px;opacity:.7}
+
+    /* responsividade extra */
+    @media (max-width:640px){
+      .hm-grid{grid-template-columns:repeat(7,1fr)}
+      .fc-q{font-size:var(--text-lg)}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo" aria-label="Logo do dashboard">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 18V6l7 5 7-5v12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1>MIG Expert</h1>
+          <p>Dashboard de estudo e execução</p>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Painéis</div>
+        <button class="nav-btn active" data-target="overview">Visão geral <span class="pill" id="navTodayPill">Hoje</span></button>
+        <button class="nav-btn" data-target="roadmap">Roadmap 10 semanas <span class="mini">Plano mestre</span></button>
+        <button class="nav-btn" data-target="weekdetail">Semana ativa <span class="mini">Guia</span></button>
+        <button class="nav-btn" data-target="audiences">Perfis de cliente <span class="mini">Tradução</span></button>
+        <button class="nav-btn" data-target="glossary">Vocabulário <span class="mini">Glossário</span></button>
+        <button class="nav-btn" data-target="checklist">Checklist base <span class="mini">Conhecimento</span></button>
+        <button class="nav-btn" data-target="routine">Rotina diária <span class="mini">Execução</span></button>
+        <button class="nav-btn" data-target="pitch">Pitch & apresentações <span class="mini">Prática</span></button>
+        <button class="nav-btn" data-target="history">Histórico de pilares <span class="mini">30 dias</span></button>
+        <button class="nav-btn" data-target="flashcards">Banco de perguntas <span class="mini">Flashcards</span></button>
+        <button class="nav-btn" data-target="presentations">Apresentações reais <span class="mini">Tracker</span></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Seus focos</div>
+        <div class="tag-row">
+          <span class="tag">MIGNOW</span>
+          <span class="tag">ECC vs S/4</span>
+          <span class="tag">RISE / BTP / CPI</span>
+          <span class="tag">Ambientes</span>
+          <span class="tag">Jornada MIG</span>
+          <span class="tag">Escopo</span>
+          <span class="tag">Clean Core</span>
+          <span class="tag">Venda consultiva</span>
+        </div>
+      </div>
+
+      <div class="quote">
+        <strong style="display:block;margin-bottom:.4rem">Regra do dashboard</strong>
+        <p class="mini">Todo dia precisa gerar 3 pilares: estudo do tema, 1 apresentação e 1 revisão de pitch.</p>
+      </div>
+    </aside>
+
+    <header class="header">
+      <div class="header-left">
+        <h2>Jornada MIG Expert</h2>
+        <p class="muted" id="headerSubtitle">Da formação técnica à narrativa comercial consultiva</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn" id="themeToggle" data-theme-toggle aria-label="Alternar tema">🌙</button>
+        <button class="btn" id="importBtn" title="Importar progresso a partir de um arquivo JSON">Importar</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+        <button class="btn" id="backupBtn" title="Baixar todo o seu progresso (streak, dias, pilares, glossário, notas) em JSON">Backup</button>
+        <button class="btn primary" id="exportBtn">Exportar resumo</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- ================== OVERVIEW ================== -->
+      <section id="overview" class="panel active">
+        <div class="grid kpi-grid">
+          <div class="card pad kpi">
+            <div class="label">Hoje</div>
+            <div class="value" id="kpiDate">—</div>
+            <div class="sub" id="kpiWeekday">—</div>
+          </div>
+          <div class="card pad kpi">
+            <div class="label">Semana ativa</div>
+            <div class="value" id="kpiWeekNum">—</div>
+            <div class="sub" id="kpiWeekTheme">—</div>
+          </div>
+          <div class="card pad kpi">
+            <div class="label">Próximo tema</div>
+            <div class="value" id="kpiNextWeek" style="font-size:var(--text-lg)">—</div>
+            <div class="sub" id="kpiNextDate">—</div>
+          </div>
+          <div class="card pad kpi">
+            <div class="label">Foco de hoje</div>
+            <div class="value" id="kpiFocus" style="font-size:var(--text-lg)">—</div>
+            <div class="sub">Pilar do dia</div>
+          </div>
+        </div>
+
+        <div class="layout">
+          <!-- Streak / gamificação -->
+          <div class="streak-card">
+            <div class="streak-top">
+              <div style="display:flex;gap:1rem;align-items:center">
+                <div class="streak-flame">🔥</div>
+                <div>
+                  <div class="streak-number" id="streakNumber">0</div>
+                  <div class="streak-label">Streak atual · dias seguidos</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:180px">
+                <div class="mini" style="margin-bottom:.35rem">Meta semanal: 7 dias completos</div>
+                <div class="progress gold"><span id="weekProgress" style="width:0%"></span></div>
+                <div class="mini" id="weekProgressLabel" style="margin-top:.35rem">0 de 7 dias concluídos</div>
+              </div>
+            </div>
+
+            <div class="status-msg" id="streakMessage">Comece hoje marcando seus 3 pilares.</div>
+
+            <div class="pillars">
+              <label class="pillar p1">
+                <input type="checkbox" id="pillarStudy" style="margin-right:.4rem;accent-color:var(--color-primary)">
+                <strong>1. Estudo principal</strong>
+                Tema da semana com foco em entender, não decorar.
+              </label>
+              <label class="pillar p2">
+                <input type="checkbox" id="pillarPresent" style="margin-right:.4rem;accent-color:var(--color-blue)">
+                <strong>2. Apresentação</strong>
+                Mini apresentação (3 slides ou roteiro de 90s).
+              </label>
+              <label class="pillar p3">
+                <input type="checkbox" id="pillarPitch" style="margin-right:.4rem;accent-color:var(--color-gold)">
+                <strong>3. Revisão de pitch</strong>
+                Reescrever ou melhorar um trecho do pitch.
+              </label>
+            </div>
+
+            <div class="week-strip" id="weekStrip"><!-- gerado via JS --></div>
+
+            <div class="streak-actions">
+              <button class="btn success" id="closeDayBtn">Fechei meus 3 pilares hoje</button>
+              <button class="btn warn" id="clearDayBtn">Limpar hoje</button>
+              <span class="mini" id="dayStatusText" style="align-self:center;margin-left:.5rem">Hoje ainda não foi concluído</span>
+            </div>
+          </div>
+
+          <!-- Semana atual destacada -->
+          <div class="card pad highlight">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem">
+              <h3 class="section-title" style="margin-bottom:0">Semana atual</h3>
+              <span class="pill" id="currentWeekBadge">Semana —</span>
+            </div>
+            <h4 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:.3rem" id="currentWeekTitle">—</h4>
+            <p class="mini" id="currentWeekObjective" style="margin-bottom:.7rem">—</p>
+            <div class="progress"><span id="currentWeekProgress" style="width:0%"></span></div>
+            <p class="mini" id="currentWeekProgressLabel" style="margin-top:.4rem">—</p>
+
+            <h5 style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin:.9rem 0 .4rem">Subtópicos</h5>
+            <ul class="bullet-list" id="currentWeekTopics"></ul>
+
+            <button class="btn primary" id="goToWeekDetail" style="margin-top:.8rem;width:100%">Abrir guia da semana</button>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card pad">
+            <h3 class="section-title">Framework diário</h3>
+            <div class="task">1. Estudo do tema da semana com foco em entender, não decorar.</div>
+            <div class="task present">2. Criar mini apresentação (3 slides ou roteiro de 90s).</div>
+            <div class="task pitch">3. Revisar ou reescrever um trecho do pitch comercial.</div>
+            <div class="task review">4. Fechar com 5 aprendizados e 1 áudio curto explicando o tema.</div>
+            <div class="legend">
+              <span><i class="dot" style="background:var(--color-primary)"></i> estudo</span>
+              <span><i class="dot" style="background:var(--color-blue)"></i> apresentação</span>
+              <span><i class="dot" style="background:var(--color-gold)"></i> pitch</span>
+              <span><i class="dot" style="background:var(--color-success)"></i> revisão</span>
+            </div>
+          </div>
+          <div class="card pad">
+            <h3 class="section-title">Notas rápidas da semana</h3>
+            <textarea class="notes" id="weekNotes" placeholder="Escreva aqui seus aprendizados, dúvidas para perguntar internamente, frases boas de pitch e objeções dos clientes..."></textarea>
+            <p class="footer-note">Dica: use este campo para transformar estudo em frase natural para a próxima call. Salvo automaticamente.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== ROADMAP ================== -->
+      <section id="roadmap" class="panel">
+        <div class="card pad">
+          <h3 class="section-title">Roadmap de 10 semanas — Jornada MIG Expert</h3>
+          <p class="section-sub">Da narrativa institucional até a venda consultiva avançada. Clique em uma semana para abrir o guia detalhado.</p>
+          <div class="week-list" id="roadmapList"><!-- gerado via JS --></div>
+        </div>
+      </section>
+
+      <!-- ================== WEEK DETAIL ================== -->
+      <section id="weekdetail" class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem;margin-bottom:var(--space-4)">
+          <div>
+            <h3 class="section-title" style="margin-bottom:.2rem">Guia detalhado por semana</h3>
+            <p class="mini">Cada semana traz objetivo, subtópicos, entregáveis, leitura/escuta e tradução por público.</p>
+          </div>
+          <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
+            <label class="mini">Selecionar semana</label>
+            <select id="weekSelect" class="btn" style="padding:.55rem .8rem"></select>
+          </div>
+        </div>
+
+        <div id="weekDetailContent"><!-- gerado via JS --></div>
+      </section>
+
+      <!-- ================== AUDIENCES ================== -->
+      <section id="audiences" class="panel">
+        <div class="card pad" style="margin-bottom:var(--space-5)">
+          <h3 class="section-title">Como vender para perfis diferentes</h3>
+          <p class="section-sub">Mesma mensagem, linguagem diferente. Use esta seção como referência rápida antes de qualquer call.</p>
+          <div class="three-col" id="audiencesOverview"><!-- gerado via JS --></div>
+        </div>
+
+        <div class="card pad">
+          <h3 class="section-title">Princípios de adaptação</h3>
+          <div class="three-col">
+            <div>
+              <h5 style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-bottom:.4rem">Para CIO / sponsor</h5>
+              <ul class="bullet-list">
+                <li>Fale risco, custo, prazo e roadmap antes de tecnologia.</li>
+                <li>Use métricas: downtime, esforço, capex/opex, time-to-value.</li>
+                <li>Ancore no roadmap SAP (suporte ECC, S/4, cloud).</li>
+              </ul>
+            </div>
+            <div>
+              <h5 style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-bottom:.4rem">Para Basis / arquiteto</h5>
+              <ul class="bullet-list">
+                <li>Seja preciso: brownfield, shell, system copy, DMO, SUM.</li>
+                <li>Mostre controle: logs, rollback, ambientes, governança.</li>
+                <li>Reconheça complexidade antes de prometer automação.</li>
+              </ul>
+            </div>
+            <div>
+              <h5 style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-bottom:.4rem">Para negócio / usuário</h5>
+              <ul class="bullet-list">
+                <li>Traduza tecnologia em impacto no processo do dia a dia.</li>
+                <li>Reduza jargão. Substitua por exemplo concreto.</li>
+                <li>Foque em ganho de produtividade e visibilidade.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== GLOSSARY ================== -->
+      <section id="glossary" class="panel">
+        <div class="card pad">
+          <h3 class="section-title">Vocabulário técnico-comercial</h3>
+          <p class="section-sub">Clique em um termo para expandir a descrição. Você pode editar, adicionar e remover termos — tudo fica salvo automaticamente.</p>
+          <div class="glossary-toolbar">
+            <input type="text" id="glossarySearch" class="glossary-search" placeholder="Buscar termo... (ex.: RISE, Clean Core, SUM)" />
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+              <button class="btn" id="glossaryExpandAll">Expandir tudo</button>
+              <button class="btn" id="glossaryCollapseAll">Recolher tudo</button>
+              <button class="btn primary" id="glossaryAddBtn">+ Adicionar termo</button>
+            </div>
+          </div>
+          <p class="mini" id="glossaryCount" style="margin-bottom:.6rem"></p>
+          <div class="glossary" id="glossaryList"><!-- gerado via JS --></div>
+        </div>
+      </section>
+
+      <!-- ================== CHECKLIST ================== -->
+      <section id="checklist" class="panel">
+        <div class="card pad">
+          <h3 class="section-title">Checklist base de conhecimento MIG Expert</h3>
+          <p class="section-sub">Marque conforme você sentir segurança real para explicar o tema sem consulta.</p>
+          <div class="check-grid">
+            <label class="check-item" data-key="chk_mignow"><input type="checkbox"><div><strong>MIGNOW: origem e posicionamento</strong><span>História, propósito, diferenciais, visão.</span></div></label>
+            <label class="check-item" data-key="chk_ecc_s4"><input type="checkbox"><div><strong>ECC vs S/4HANA</strong><span>HANA, Fiori, BP/CVI, simplificações.</span></div></label>
+            <label class="check-item" data-key="chk_funcs"><input type="checkbox"><div><strong>Funcionalidades atrativas</strong><span>O que vende: Fiori, embedded analytics, BP.</span></div></label>
+            <label class="check-item" data-key="chk_vocab"><input type="checkbox"><div><strong>Vocabulário técnico</strong><span>RISE, BTP, CPI, brownfield, cutover, hypercare.</span></div></label>
+            <label class="check-item" data-key="chk_journey"><input type="checkbox"><div><strong>Jornada MIGNOW completa</strong><span>PreCheck, TechSpec, Conversion, Solve, Update.</span></div></label>
+            <label class="check-item" data-key="chk_envs"><input type="checkbox"><div><strong>Ambientes e ciclos</strong><span>Sandbox, QA, PRD, SIT, UAT, cutover.</span></div></label>
+            <label class="check-item" data-key="chk_mig"><input type="checkbox"><div><strong>Como o MIG funciona</strong><span>Onde atua, automação, segurança, governança.</span></div></label>
+            <label class="check-item" data-key="chk_scope"><input type="checkbox"><div><strong>Precisão de escopo</strong><span>Automatizado vs consultivo vs exceção.</span></div></label>
+            <label class="check-item" data-key="chk_cleancore"><input type="checkbox"><div><strong>Clean Core estratégico</strong><span>ALV→Fiori, RFC→OData, PI/PO→CPI, BTP.</span></div></label>
+            <label class="check-item" data-key="chk_consult"><input type="checkbox"><div><strong>Venda consultiva</strong><span>Discovery, objeções, narrativa dor→valor.</span></div></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== ROUTINE ================== -->
+      <section id="routine" class="panel">
+        <div class="card pad">
+          <h3 class="section-title">Rotina semanal de segunda a sexta</h3>
+          <p class="section-sub">A meta é nunca terminar um dia sem transformar estudo em narrativa comercial.</p>
+          <div class="daily-grid">
+            <div class="day-card">
+              <h4>Segunda</h4>
+              <div class="task">Visão geral do tema da semana.</div>
+              <div class="task present">Mini apresentação executiva.</div>
+              <div class="task pitch">Revisar abertura do pitch.</div>
+              <div class="task review">Registrar 5 aprendizados.</div>
+            </div>
+            <div class="day-card">
+              <h4>Terça</h4>
+              <div class="task">Subtema 1 com exemplos práticos.</div>
+              <div class="task present">Apresentação adaptada para CIO.</div>
+              <div class="task pitch">Transição problema → solução.</div>
+              <div class="task review">1 áudio de 2 minutos.</div>
+            </div>
+            <div class="day-card">
+              <h4>Quarta</h4>
+              <div class="task">Subtema 2 com tabela/resumo.</div>
+              <div class="task present">Apresentação para TI/Basis.</div>
+              <div class="task pitch">Explicação técnica simplificada.</div>
+              <div class="task review">Criar 5 flashcards.</div>
+            </div>
+            <div class="day-card">
+              <h4>Quinta</h4>
+              <div class="task">Revisão ativa e roleplay de objeções.</div>
+              <div class="task present">Apresentação focada em objeção.</div>
+              <div class="task pitch">Melhorar fechamento.</div>
+              <div class="task review">Checagem do que ainda trava.</div>
+            </div>
+            <div class="day-card">
+              <h4>Sexta</h4>
+              <div class="task">Consolidar a semana.</div>
+              <div class="task present">Resumo final da semana.</div>
+              <div class="task pitch">Versão completa do pitch.</div>
+              <div class="task review">Cheat sheet de 1 página.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== PITCH ================== -->
+      <section id="pitch" class="panel">
+        <div class="two-col">
+          <div class="card pad">
+            <h3 class="section-title">Checklist diário de pitch</h3>
+            <div class="check-grid" style="grid-template-columns:1fr;">
+              <label class="check-item" data-key="pitch_open"><input type="checkbox"><div><strong>Abertura</strong><span>Quem é a MIGNOW e por que o cliente deve ouvir.</span></div></label>
+              <label class="check-item" data-key="pitch_pain"><input type="checkbox"><div><strong>Dor</strong><span>Problema do ECC / upgrade / clean core.</span></div></label>
+              <label class="check-item" data-key="pitch_sol"><input type="checkbox"><div><strong>Solução</strong><span>Como a MIGNOW entra na jornada do cliente.</span></div></label>
+              <label class="check-item" data-key="pitch_how"><input type="checkbox"><div><strong>Como fazemos</strong><span>Ambientes, automação e segurança em linguagem clara.</span></div></label>
+              <label class="check-item" data-key="pitch_diff"><input type="checkbox"><div><strong>Diferenciais</strong><span>IA, escala, velocidade, foco SAP.</span></div></label>
+              <label class="check-item" data-key="pitch_close"><input type="checkbox"><div><strong>Fechamento</strong><span>Próximo passo e chamada para continuidade.</span></div></label>
+            </div>
+          </div>
+          <div class="card pad">
+            <h3 class="section-title">Modelo de apresentação do dia</h3>
+            <div class="task present">Slide 1: tema do dia em 1 frase.</div>
+            <div class="task present">Slide 2: por que isso importa para o cliente.</div>
+            <div class="task present">Slide 3: como a MIGNOW entra.</div>
+            <div class="task present">Slide 4: exemplo de fala para CIO/Basis/negócio.</div>
+            <div class="task review">Feche gravando um pitch de 60–90 segundos.</div>
+            <p class="footer-note">Meta: nunca terminar o dia sem transformar estudo em narrativa comercial.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== HISTÓRICO DE PILARES ================== -->
+      <section id="history" class="panel">
+        <div class="card pad">
+          <h3 class="section-title">Histórico de pilares — últimos 30 dias</h3>
+          <p class="muted" style="margin-top:-.4rem">Cada quadrado é um dia. A cor representa quantos pilares você fechou nele (Estudo, Apresentação, Pitch).</p>
+
+          <div id="historyStats" class="grid kpi-grid" style="margin-top:var(--space-4)"></div>
+
+          <div style="margin-top:var(--space-4)">
+            <div id="historyHeatmap" class="hm-grid"></div>
+            <div class="hm-legend">
+              <span class="hm-cell hm-0"></span><span class="mini">0 pilares</span>
+              <span class="hm-cell hm-1"></span><span class="mini">1 pilar</span>
+              <span class="hm-cell hm-2"></span><span class="mini">2 pilares</span>
+              <span class="hm-cell hm-3"></span><span class="mini">3 pilares (dia completo)</span>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--space-5)">
+            <h4 class="section-title" style="font-size:var(--text-sm)">Pilar por pilar</h4>
+            <div id="pillarBreakdown" class="pillar-bd"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== BANCO DE PERGUNTAS (FLASHCARDS) ================== -->
+      <section id="flashcards" class="panel">
+        <div class="card pad">
+          <h3 class="section-title">Banco de perguntas — flashcards de cliente</h3>
+          <p class="muted" style="margin-top:-.4rem">Treine respostas de campo. Clique na carta para virar. Marque <strong>Sei</strong> ou <strong>Revisar</strong> — seu progresso fica salvo.</p>
+
+          <div class="fc-controls">
+            <label class="mini">Filtrar por semana:
+              <select id="fcWeek"></select>
+            </label>
+            <label class="mini">Status:
+              <select id="fcStatus">
+                <option value="all">Todos</option>
+                <option value="todo">Pendentes</option>
+                <option value="review">Para revisar</option>
+                <option value="known">Já sei</option>
+              </select>
+            </label>
+            <button class="btn" id="fcShuffle">Embaralhar</button>
+            <button class="btn" id="fcReset">Zerar progresso</button>
+          </div>
+
+          <div id="fcStage" class="fc-stage">
+            <div class="fc-counter mini" id="fcCounter">—</div>
+            <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Clique para virar o flashcard">
+              <div class="fc-face fc-front active">
+                <div class="fc-meta"><span id="fcTag" class="tag">—</span><span class="mini" id="fcAudience">—</span></div>
+                <div class="fc-q" id="fcQuestion">—</div>
+                <div class="fc-hint mini">Clique para ver a resposta</div>
+              </div>
+              <div class="fc-face fc-back">
+                <div class="fc-meta"><span class="tag">Resposta-guia</span></div>
+                <div class="fc-a" id="fcAnswer">—</div>
+                <div class="fc-hint mini">Adapte para seu público antes de falar.</div>
+              </div>
+            </div>
+            <div class="fc-actions">
+              <button class="btn" id="fcPrev">← Anterior</button>
+              <button class="btn warn" id="fcReview">Revisar depois</button>
+              <button class="btn primary" id="fcKnown">Já sei</button>
+              <button class="btn" id="fcNext">Próximo →</button>
+            </div>
+            <div id="fcProgress" class="fc-progress mini">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== APRESENTAÇÕES REAIS ================== -->
+      <section id="presentations" class="panel">
+        <div class="card pad">
+          <h3 class="section-title">Apresentações reais — tracker</h3>
+          <p class="muted" style="margin-top:-.4rem">Registre cada apresentação feita: para quem, autoavaliação e o que melhorar. Esse histórico vira sua reputação.</p>
+
+          <div id="presStats" class="grid kpi-grid" style="margin-top:var(--space-4)"></div>
+
+          <form id="presForm" class="pres-form" autocomplete="off">
+            <div class="pres-grid">
+              <label class="mini">Data
+                <input type="date" id="presDate" required>
+              </label>
+              <label class="mini">Tema / Cliente
+                <input type="text" id="presTopic" placeholder="Ex.: Discovery Acme — ECC vs S/4" required>
+              </label>
+              <label class="mini">Público
+                <select id="presAudience">
+                  <option value="cio">CIO / CTO</option>
+                  <option value="basis">Basis / Arquiteto</option>
+                  <option value="business">Negócio</option>
+                  <option value="sponsor">Sponsor</option>
+                  <option value="user">Usuário-chave</option>
+                  <option value="interno">Treino interno</option>
+                </select>
+              </label>
+              <label class="mini">Duração (min)
+                <input type="number" id="presDuration" min="1" max="480" step="1" placeholder="30">
+              </label>
+              <label class="mini">Autoavaliação (1-5)
+                <select id="presScore">
+                  <option value="5">5 — excelente</option>
+                  <option value="4" selected>4 — boa</option>
+                  <option value="3">3 — ok</option>
+                  <option value="2">2 — fraca</option>
+                  <option value="1">1 — refazer</option>
+                </select>
+              </label>
+              <label class="mini full">O que funcionou
+                <textarea id="presWins" rows="2" placeholder="Pontos fortes, perguntas que respondi bem…"></textarea>
+              </label>
+              <label class="mini full">O que melhorar
+                <textarea id="presImprove" rows="2" placeholder="Lacunas técnicas, ruído de narrativa, slides confusos…"></textarea>
+              </label>
+            </div>
+            <div class="pres-actions">
+              <button type="submit" class="btn primary" id="presSubmit">Salvar apresentação</button>
+              <button type="button" class="btn" id="presCancel" hidden>Cancelar edição</button>
+            </div>
+          </form>
+
+          <div style="margin-top:var(--space-5)">
+            <h4 class="section-title" style="font-size:var(--text-sm)">Histórico</h4>
+            <div id="presList" class="pres-list"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+  (function(){
+    'use strict';
+
+    // ---------------- STORAGE (localStorage + fallback memória) ----------------
+    const memoryStore = {};
+    const storage = {
+      get(key){
+        try { const v = localStorage.getItem(key); return v === null ? memoryStore[key] : v; }
+        catch(e){ return memoryStore[key]; }
+      },
+      set(key, val){
+        try { localStorage.setItem(key, val); }
+        catch(e){ memoryStore[key] = val; }
+      },
+      remove(key){
+        try { localStorage.removeItem(key); } catch(e){}
+        delete memoryStore[key];
+      }
+    };
+    const SKEY = {
+      done: 'mig.daysCompleted.v1',
+      streak: 'mig.streak.v1',
+      pillars: 'mig.pillarsToday.v1',
+      notes: 'mig.weekNotes.v1',
+      checks: 'mig.checks.v1',
+      theme: 'mig.theme.v1',
+      glossary: 'mig.glossary.v1',
+      history: 'mig.pillarsHistory.v1',
+      flashcards: 'mig.flashcards.v1',
+      presentations: 'mig.presentations.v1'
+    };
+
+    // ---------------- PLANO: dados das 10 semanas ----------------
+    const PLAN_START = new Date(2026, 4, 11); // 11/05/2026 (mês 0-indexado)
+    const WEEKDAYS_PT = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+    const WEEKDAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+    const WEEKS = [
+      {
+        n:1, badge:'Base', tagColor:'',
+        title:'MIGNOW — origem, posicionamento e proposta de valor',
+        objective:'Dominar a narrativa institucional e comercial da empresa.',
+        topics:[
+          'Origem da MIGNOW e contexto de mercado.',
+          'Posicionamento como software company de automação SAP (ECC → S/4HANA, upgrades, clean core).',
+          'Proposta de valor da MIGNOW.',
+          'Diferenciais competitivos e portfólio.',
+          'Como explicar "por que MIGNOW" em 1 minuto e em 3 minutos.'
+        ],
+        deliverables:[
+          'Pitch institucional curto (1 minuto).',
+          'Pitch estendido (3 minutos).',
+          'Apresentação "Quem é a MIGNOW?" com foco em cliente.'
+        ],
+        media:[
+          {type:'Livro', title:'SPIN Selling — Introdução + perguntas de Situação/Problema', focus:'Venda consultiva: estrutura de discovery'},
+          {type:'Artigo', title:'The Art of Consultative Selling in the Tech Industry', focus:'Postura consultiva em tecnologia'},
+          {type:'Podcast', title:'Selling to the CIO — relação CIO × fornecedor', focus:'Entender o interlocutor executivo'}
+        ],
+        audience: {
+          cio: {
+            bullets:[
+              'MIGNOW reduz risco e prazo da jornada SAP.',
+              'Foco em SAP puro: ECC → S/4, upgrades, clean core.',
+              'Automação que protege governança e auditoria.',
+              'Time-to-value mensurável, com previsibilidade.'
+            ],
+            qa:[
+              {q:'Por que escolher vocês em vez de uma big consulting?', a:'Somos foco SAP com automação proprietária — entregamos o mesmo escopo em fração do tempo e com menos risco.'},
+              {q:'Qual o tamanho da empresa?', a:'Software company global, com presença em LATAM, US e Europa, focada em automação SAP.'},
+              {q:'Por que isso importa para mim agora?', a:'Porque a SAP define janelas claras de suporte ao ECC, e mover sem método aumenta risco e custo.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'A MIGNOW automatiza atividades repetitivas, não substitui Basis.',
+              'Trabalhamos sobre ferramentas SAP (SUM, SIC, ATC, BDC).',
+              'Logs, governança e rollback são parte do método.',
+              'Aceleramos sandbox, QA e ciclos sem ferir compliance.'
+            ],
+            qa:[
+              {q:'Vocês usam ferramentas SAP padrão?', a:'Sim. Atuamos sobre SUM, SIC, ATC e BDC, com camada de automação por cima.'},
+              {q:'O que muda no meu dia a dia?', a:'Você passa de operar tarefas repetitivas a validar e governar a entrega.'},
+              {q:'Como vocês tratam exceções?', a:'Detecção precoce, classificação por tipo e roteamento para decisão do time funcional.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'A MIGNOW acelera a chegada do S/4HANA ao seu processo.',
+              'Menos downtime e menos surpresa em cutover.',
+              'Mais tempo do time de TI para evolução de negócio.',
+              'Modernização contínua, não um projeto isolado.'
+            ],
+            qa:[
+              {q:'Em quanto tempo eu vejo benefício?', a:'Em ondas — assessment já entrega visibilidade, e a conversão automatizada reduz semanas de cronograma.'},
+              {q:'Vocês interferem no meu processo?', a:'Não. A automação cuida da migração técnica; as decisões de negócio continuam com você.'},
+              {q:'Posso falar com referências?', a:'Sim, temos cases em diferentes indústrias, posso conectar com perfil parecido com o seu.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'A MIGNOW é o vetor mais rápido e seguro do programa S/4.',
+              'Reduz risco político: menos atrasos, menos surpresas.',
+              'Demonstra modernização real para o board.',
+              'Construído com governança de auditoria desde o início.'
+            ],
+            qa:[
+              {q:'Qual o ROI esperado?', a:'Ganho de cronograma, redução de esforço interno e antecipação de benefícios do S/4 — quantificamos no business case.'},
+              {q:'E se algo der errado?', a:'Trabalhamos com janelas, rollback e governança documentada; o risco é controlado por desenho.'},
+              {q:'Por que agora?', a:'Porque ECC tem janela de suporte definida e mover sob pressão custa mais caro.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'Você ganha telas Fiori mais simples no dia a dia.',
+              'Menos transações antigas, mais foco em tarefa.',
+              'Indicadores em tempo real onde você opera.',
+              'Migração com menos paradas e menos retrabalho.'
+            ],
+            qa:[
+              {q:'Vou perder minhas customizações?', a:'Não. Avaliamos cada customização e modernizamos o que faz sentido.'},
+              {q:'Vou precisar reaprender tudo?', a:'O essencial muda pouco; o ambiente Fiori simplifica grande parte do que era difícil.'},
+              {q:'Quem me suporta no go-live?', a:'A MIGNOW participa do hypercare junto com o time interno.'}
+            ]
+          }
+        }
+      },
+      {
+        n:2, badge:'Fundamento',
+        title:'ECC vs S/4HANA',
+        objective:'Entender profundamente a mudança de ECC para S/4 e explicar com segurança.',
+        topics:[
+          'Diferenças técnicas entre ECC e S/4HANA (banco, dados, UI).',
+          'Banco relacional vs HANA in-memory.',
+          'SAP GUI vs Fiori.',
+          'Simplificação do modelo de dados e impactos em processos.',
+          'Por que a migração se tornou prioridade de mercado.',
+          'Como vender urgência e oportunidade de transformação.'
+        ],
+        deliverables:[
+          'Tabela comparativa ECC vs S/4 (técnico + negócio).',
+          'Mini apresentação executiva "Por que sair do ECC agora?".',
+          'Script de resposta para perguntas comuns sobre timing de migração.'
+        ],
+        media:[
+          {type:'Livro', title:'The Challenger Sale — Teach for differentiation', focus:'Ensinar algo novo ao cliente'},
+          {type:'Artigo', title:'Estratégias de conversão ECC → S/4HANA', focus:'Decisão técnica de approach'},
+          {type:'Podcast', title:'Blueprint ERP — transformação SAP/S4', focus:'Cases reais de transformação'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'ECC tem janela de suporte definida pela SAP.',
+              'S/4 é a base para IA, analytics em tempo real e cloud.',
+              'Quanto mais tarde, mais caro e mais arriscado.',
+              'A decisão é estratégica, não só técnica.'
+            ],
+            qa:[
+              {q:'Posso esperar mais?', a:'Pode, mas o custo de mover sob pressão depois é maior que mover planejado agora.'},
+              {q:'Qual o impacto de não mover?', a:'Suporte limitado, perda de inovação e dificuldade de integrar novas frentes (IA, cloud).'},
+              {q:'Brownfield, Selective Data Transmission ou Shell?', a:'Depende do legado e do apetite a risco — Brownfield preserva tudo, Selective Data Transmission traz só o relevante, Shell zera dados. A MIGNOW ajuda a desenhar isso.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'HANA muda o modelo de dados, índices e otimização.',
+              'Tabelas como MATDOC reduzem joins e melhoram performance.',
+              'Fiori não substitui GUI no início, convive.',
+              'Conversão exige SIC, ATC e tratamento de custom code.'
+            ],
+            qa:[
+              {q:'Vou ter que reescrever ABAP?', a:'Parte sim — código não-HANA-ready precisa ajuste; a MIGNOW automatiza grande parte disso.'},
+              {q:'Como fica desempenho?', a:'Em geral melhora, mas exige otimização de queries antigas e leitura em memória.'},
+              {q:'E os jobs?', a:'Inventariamos, avaliamos compatibilidade e modernizamos onde aplicável.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'Telas mais simples e processos com menos passos.',
+              'Indicadores em tempo real onde você toma decisão.',
+              'Menos integração quebrada entre módulos.',
+              'Base pronta para IA e automação.'
+            ],
+            qa:[
+              {q:'Meu relatório vai mudar?', a:'A base muda; você ganha relatórios mais rápidos e analytics embarcado.'},
+              {q:'Vou ter mais autonomia?', a:'Sim — Fiori e embedded analytics reduzem dependência de TI para extrair informação.'},
+              {q:'Quanto tempo de migração?', a:'Depende do escopo, mas com automação cortamos semanas do cronograma tradicional.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Migrar agora vira investimento. Esperar vira despesa.',
+              'S/4 destrava conversa de IA e dado em tempo real.',
+              'Reduz risco de obsolescência regulatória.',
+              'Demonstra modernização tangível para o board.'
+            ],
+            qa:[
+              {q:'O que ganho como sponsor?', a:'Velocidade, narrativa de modernização e base para próximas frentes de transformação.'},
+              {q:'Qual o risco?', a:'Maior risco é não mover — mover com método é risco controlado.'},
+              {q:'Posso parcelar?', a:'Sim, em ondas: assessment, conversão, modernização contínua.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'Menos cliques para fazer a mesma tarefa.',
+              'Painel próprio com indicadores do seu trabalho.',
+              'Telas que funcionam no celular e tablet.',
+              'Menos transação decorada.'
+            ],
+            qa:[
+              {q:'Eu preciso aprender tudo de novo?', a:'Não, o essencial muda pouco e o Fiori facilita o que era difícil.'},
+              {q:'E as transações que eu uso?', a:'A maioria continua existindo; muitas ganham versão Fiori melhor.'},
+              {q:'Vou ter treinamento?', a:'Sim, faz parte do roteiro de mudança.'}
+            ]
+          }
+        }
+      },
+      {
+        n:3, badge:'Valor',
+        title:'Funcionalidades do S/4HANA que mais vendem',
+        objective:'Entender o que realmente gera interesse comercial no cliente.',
+        topics:[
+          'Fiori (experiência do usuário, produtividade).',
+          'Embedded Analytics (insights em tempo real).',
+          'BP/CVI (Business Partner, unificação de cadastros).',
+          'Simplificações relevantes (MATDOC, novas tabelas, processos otimizados).',
+          'Benefícios de governança, compliance e controle.',
+          'Como traduzir funcionalidade em benefício de negócio para finanças, logística, fiscal.'
+        ],
+        deliverables:[
+          'Top 5 funcionalidades mais vendáveis com "frase de efeito" por perfil.',
+          'Pitch de 2 minutos para CIO e pitch de 2 minutos para negócio.',
+          'Mini apresentação "O que o cliente ganha com S/4HANA de verdade".'
+        ],
+        media:[
+          {type:'Livro', title:'SPIN Selling — perguntas de Implicação e Need-Payoff', focus:'Conduzir cliente até o valor'},
+          {type:'Artigo', title:'Benefícios práticos de S/4HANA para negócio', focus:'Tradução de feature em valor'},
+          {type:'Podcast', title:'Caso real de migração S/4 — ganhos de processo', focus:'Histórias concretas para usar em call'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'Fiori + analytics destravam produtividade da área.',
+              'BP/CVI reduz divergência de cadastros e risco fiscal.',
+              'MATDOC melhora performance de fechamento.',
+              'Base para IA generativa e Joule.'
+            ],
+            qa:[
+              {q:'Quais features me dão ROI rápido?', a:'Fiori e embedded analytics, porque atingem o usuário diretamente.'},
+              {q:'O que muda em controle?', a:'BP/CVI unifica cliente/fornecedor — menos divergência e mais governança.'},
+              {q:'E IA?', a:'S/4 é a base limpa para usar Joule e cenários de IA SAP.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'MATDOC elimina junção de tabelas antigas de movimento.',
+              'Embedded Analytics consome diretamente do modelo HANA.',
+              'Fiori roda sobre OData, exige Gateway saudável.',
+              'BP unifica cadastros e exige migração CVI cuidadosa.'
+            ],
+            qa:[
+              {q:'Vou ter que reindexar?', a:'Em HANA o conceito muda — não há índices tradicionais; revisamos queries antigas.'},
+              {q:'Como fica integração?', a:'OData e CPI assumem o papel principal. PI/PO entra em modernização.'},
+              {q:'CVI é complicado?', a:'Tem armadilhas, sim. Por isso entramos com automação e checklist específico.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'Você fecha mês com dados em tempo real.',
+              'Cadastro de cliente e fornecedor único.',
+              'Tela única para acompanhar sua área.',
+              'Menos planilha paralela.'
+            ],
+            qa:[
+              {q:'E meu relatório do Excel?', a:'Continua existindo, mas vamos te dar uma versão dentro do S/4 que atualiza sozinha.'},
+              {q:'Fiori funciona no celular?', a:'Sim, principalmente para aprovação e consulta rápida.'},
+              {q:'O cadastro muda?', a:'Cliente e fornecedor viram Business Partner — mais limpo, menos duplicado.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Funcionalidades novas viram narrativa de modernização.',
+              'Embedded analytics reduz dependência de BI paralelo.',
+              'BP é argumento direto de compliance e governança.',
+              'Fiori é a "cara" da transformação para o usuário.'
+            ],
+            qa:[
+              {q:'O que mostro para o board?', a:'Telas Fiori, dashboards embarcados e impacto em fechamento contábil.'},
+              {q:'O usuário sente?', a:'Sim — Fiori é a parte visível e palpável da transformação.'},
+              {q:'Tem ganho fiscal?', a:'BP e analytics reduzem risco de divergência e erro de cadastro.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'App Fiori para o que você usa todo dia.',
+              'Filtros simples e busca direta.',
+              'Indicadores na tela inicial.',
+              'Mesma informação no PC e no celular.'
+            ],
+            qa:[
+              {q:'Como abro um app?', a:'Pela launchpad Fiori; é como um catálogo de aplicativos só seus.'},
+              {q:'Onde está meu indicador?', a:'No próprio Fiori, tile com número em tempo real.'},
+              {q:'É difícil aprender?', a:'Não — Fiori foi desenhado para ser intuitivo, parecido com app de banco.'}
+            ]
+          }
+        }
+      },
+      {
+        n:4, badge:'Linguagem',
+        title:'Vocabulário técnico-comercial (CIO, Basis, arquitetura)',
+        objective:'Ganhar fluência em termos de projetos, arquitetura e migração.',
+        topics:[
+          'RISE with SAP.',
+          'BTP (Business Technology Platform).',
+          'Cloud Integration / CPI.',
+          'CVI, BP.',
+          'Brownfield, Shell Conversion, Upgrade.',
+          'Downtime, cutover, hypercare.',
+          'SIT, UAT e outros marcos de teste.',
+          'Clean core, extensibilidade, APIs, OData.'
+        ],
+        deliverables:[
+          'Glossário de 30–50 termos com explicações em linguagem simples.',
+          'Cartões de revisão (flashcards).',
+          'Apresentação "Vocabulário essencial para reuniões técnicas".'
+        ],
+        media:[
+          {type:'eBook', title:'Consultative selling: how to win bigger, better deals', focus:'Estrutura de venda consultiva'},
+          {type:'Artigo', title:'Como vender para perfis técnicos', focus:'Calibrar linguagem técnica'},
+          {type:'Podcast', title:'How to Sell to CTO & CIO\'s', focus:'Conversar com decisor técnico'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'RISE é contrato + cloud + serviços, não só licença.',
+              'BTP é onde vivem extensões fora do core.',
+              'Clean core protege seu investimento futuro.',
+              'OData/API substituem integrações ponto-a-ponto antigas.'
+            ],
+            qa:[
+              {q:'RISE ou on-prem?', a:'Depende de governança, controle e roadmap de cloud — ajudo você a decidir com base em risco.'},
+              {q:'Preciso de BTP?', a:'Sim, se quer extender o S/4 mantendo o core limpo.'},
+              {q:'CPI substitui PI/PO?', a:'Sim, é o caminho recomendado pela SAP para novas integrações.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'Brownfield preserva dados e customização; shell zera dados.',
+              'CVI exige limpeza de cadastros antes da conversão.',
+              'SUM + DMO conduz a conversão técnica.',
+              'Cutover é tudo o que acontece na janela final.'
+            ],
+            qa:[
+              {q:'Shell vale a pena?', a:'Vale quando o legado de dados é tóxico ou quando se quer recomeçar o ledger.'},
+              {q:'DMO sempre?', a:'Para conversão clássica sim; otimização de downtime depende do tamanho da base.'},
+              {q:'O que vocês fazem em UAT?', a:'Damos suporte funcional, registramos defeitos e tratamos exceções em paralelo à equipe do cliente.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'SIT é o teste integrado dos sistemas.',
+              'UAT é o teste do usuário no fluxo real.',
+              'Cutover é o "ligar a chave" do novo sistema.',
+              'Hypercare é o suporte reforçado depois do go-live.'
+            ],
+            qa:[
+              {q:'O que eu faço no UAT?', a:'Executa seus cenários reais e valida que tudo funciona como espera.'},
+              {q:'Por que SIT antes de UAT?', a:'Para garantir que as integrações funcionem antes de levar para o usuário.'},
+              {q:'Hypercare dura quanto?', a:'Geralmente entre 2 e 6 semanas, dependendo da complexidade.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'RISE simplifica relacionamento comercial com SAP.',
+              'Clean core reduz custo futuro de manutenção.',
+              'API-first protege investimento em integrações.',
+              'Cutover bem desenhado é cutover sem manchete ruim.'
+            ],
+            qa:[
+              {q:'O que o RISE me dá?', a:'Um contrato único com SAP cobrindo licença, cloud e serviços base.'},
+              {q:'Clean core me poupa quanto?', a:'Reduz custo de cada upgrade futuro e libera time para inovação.'},
+              {q:'E governança?', a:'Tudo entra com logs, papéis e segregação de funções definidos.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'SIT e UAT são as fases de teste antes de virar.',
+              'Cutover é o fim de semana ou feriado em que o sistema muda.',
+              'Hypercare é o suporte extra logo depois.',
+              'Fiori, OData e API são o "como funciona" novo.'
+            ],
+            qa:[
+              {q:'Vou ter sistema fora do ar?', a:'Sim, em janela curta e planejada — comunicada com antecedência.'},
+              {q:'Quem me ajuda no primeiro dia?', a:'Hypercare: time reforçado para destravar problemas rápidos.'},
+              {q:'E se algo não funcionar?', a:'Existe canal direto para registrar e priorizar correção.'}
+            ]
+          }
+        }
+      },
+      {
+        n:5, badge:'Portfólio',
+        title:'Jornada MIGNOW ponta a ponta',
+        objective:'Dominar o portfólio e saber posicionar cada solução dentro da jornada do cliente.',
+        topics:[
+          'Assessment: MIG PreCheck, Explore AI / Insights.',
+          'Plano: Technical Specification.',
+          'Conversão: MIG Automatic Conversion.',
+          'Estabilização e suporte: Ticket Solve Hub.',
+          'Upgrade contínuo: MIG Update.',
+          'Clean Core como etapa de modernização.',
+          'Como tudo isso se encaixa no lifecycle do cliente.'
+        ],
+        deliverables:[
+          'Mapa visual da jornada MIGNOW.',
+          'Pitch por produto (frase de valor + exemplo).',
+          'Apresentação "Jornada MIGNOW de ponta a ponta".'
+        ],
+        media:[
+          {type:'Artigo', title:'Posicionamento global da MIGNOW (expansão, IA, automação)', focus:'Atualizar narrativa institucional'},
+          {type:'Artigo', title:'Venda de portfólio em serviços/produtos complexos', focus:'Cross-sell estratégico'},
+          {type:'Podcast', title:'Automação na migração S/4 com parceiro/cliente', focus:'Histórias de portfólio'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'PreCheck antecipa risco antes do projeto começar.',
+              'Conversion entrega previsibilidade no maior bloco.',
+              'Update mantém você atualizado sem dor recorrente.',
+              'Solve Hub estabiliza com SLA real.'
+            ],
+            qa:[
+              {q:'Preciso de todos os produtos?', a:'Não. Você adota por estágio do seu ciclo SAP.'},
+              {q:'Posso começar pelo PreCheck?', a:'Sim — é a forma mais segura e barata de entrar.'},
+              {q:'Como integra com meu provedor cloud?', a:'A jornada é agnóstica de hyperscaler.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'PreCheck lê o ambiente e antecipa pontos críticos.',
+              'TechSpec consolida o desenho do projeto.',
+              'Conversion entrega automação dentro de SUM/DMO.',
+              'Update faz upgrade contínuo sem retrabalho.'
+            ],
+            qa:[
+              {q:'Vocês mexem direto no meu PRD?', a:'Não. Trabalhamos em ambientes não-produtivos primeiro, com governança.'},
+              {q:'Como funciona o Update?', a:'Ciclos curtos de atualização com automação, evitando "big bang" anual.'},
+              {q:'E exceções?', a:'Solve Hub direciona, classifica e resolve com SLA.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'A jornada protege seu processo de surpresas.',
+              'Cada produto cobre um momento do ciclo SAP.',
+              'Você não precisa renegociar a cada nova fase.',
+              'Tudo desenhado para previsibilidade.'
+            ],
+            qa:[
+              {q:'Vou trocar de fornecedor toda hora?', a:'Não. Mesma jornada, mesma metodologia, ao longo do tempo.'},
+              {q:'Como medem qualidade?', a:'Por SLA, telemetria e indicadores acordados em cada produto.'},
+              {q:'Preciso decidir tudo agora?', a:'Não. A jornada é modular e cresce com você.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Jornada modular: investe quando faz sentido.',
+              'Reduz dependência de múltiplos fornecedores.',
+              'Cada etapa gera entregável tangível.',
+              'Continuidade real, não apenas projeto.'
+            ],
+            qa:[
+              {q:'Por que jornada e não projeto?', a:'Porque SAP é ciclo contínuo; tratar como projeto único multiplica custo.'},
+              {q:'Posso pausar?', a:'Pode. Cada produto é encerrável e retomável.'},
+              {q:'Cabe no meu budget anual?', a:'Sim, ajustamos cadência por capex/opex disponível.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'A cada etapa, você é informado do que muda.',
+              'Pequenos ganhos cumulativos no dia a dia.',
+              'Suporte mais rápido para problemas reais.',
+              'Menos surpresa em upgrades.'
+            ],
+            qa:[
+              {q:'Vou ser parado pelo upgrade?', a:'Não no dia a dia — fazemos em janelas comunicadas.'},
+              {q:'Quem me ajuda em erro?', a:'Canal Solve Hub, com triagem e SLA.'},
+              {q:'Vai mudar todo ano?', a:'Mudanças incrementais menores, evitando salto grande.'}
+            ]
+          }
+        }
+      },
+      {
+        n:6, badge:'Execução',
+        title:'Ambientes, testes e ciclos',
+        objective:'Entender o ciclo do projeto e conseguir explicar com clareza.',
+        topics:[
+          'Sandbox, QA, produtivo: função de cada um.',
+          'Ciclos de conversão e iterações.',
+          'SIT vs UAT (objetivo, responsáveis, entregas).',
+          'Validação técnica vs validação funcional.',
+          'Cutover, downtime, estabilização e hypercare.',
+          'Como isso se conecta com o que a MIGNOW faz.'
+        ],
+        deliverables:[
+          'Fluxo visual dos ambientes e ciclos.',
+          'Explicação simples de SIT e UAT (para técnico e para leigo).',
+          'Apresentação "Como funciona um projeto por ambientes".'
+        ],
+        media:[
+          {type:'Artigo', title:'Boas práticas de teste em projetos SAP S/4', focus:'Qualidade de entrega'},
+          {type:'Livro/Guia', title:'Gestão de projetos complexos — governança', focus:'Estrutura e ritos'},
+          {type:'Podcast', title:'Lições aprendidas em grandes programas de transformação', focus:'Antecipar pitfalls'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'Sandbox protege risco do desconhecido.',
+              'QA é onde testamos o que vai para produção.',
+              'Cutover é o momento de maior atenção.',
+              'Hypercare é seguro pós go-live.'
+            ],
+            qa:[
+              {q:'Quantos ambientes preciso?', a:'No mínimo Sandbox, QA e PRD; pode haver outros para integração.'},
+              {q:'Cutover de quanto tempo?', a:'Geralmente fim de semana, dependendo do volume.'},
+              {q:'Hypercare quanto custa?', a:'Entra no escopo da jornada, com duração e SLA definidos.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'Sandbox para descoberta e teste destrutivo.',
+              'QA para validar conversão e ajustes.',
+              'PRD com janela controlada e plano de rollback.',
+              'SIT integra, UAT valida com usuário.'
+            ],
+            qa:[
+              {q:'Quantos ciclos em QA?', a:'Dois ou três, dependendo do tamanho e dos defeitos abertos.'},
+              {q:'Como vocês testam integrações?', a:'Catálogo de cenários SIT com checklist por interface.'},
+              {q:'E performance?', a:'Cenário de performance roda em ambiente dedicado, antes do cutover.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'Você participa do UAT testando seus cenários reais.',
+              'SIT é com a TI; UAT é com você.',
+              'Antes do cutover, há simulado.',
+              'Hypercare é onde você liga se algo falhar.'
+            ],
+            qa:[
+              {q:'O que eu preciso preparar?', a:'Seus cenários de uso mais críticos; ajudamos a estruturar.'},
+              {q:'E se eu não tiver tempo?', a:'Estruturamos UAT enxuto, com foco no crítico.'},
+              {q:'Quem documenta?', a:'A MIGNOW documenta, você valida.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Ambientes separam risco em camadas.',
+              'Ciclos curtos detectam problema cedo.',
+              'Cutover bem planejado é cutover discreto.',
+              'Hypercare é seguro de imagem do programa.'
+            ],
+            qa:[
+              {q:'Por que tantos ciclos?', a:'Porque erro pego em sandbox custa 1; pego em PRD custa 100.'},
+              {q:'Cutover no fim de semana?', a:'Quase sempre, para minimizar downtime de negócio.'},
+              {q:'Hypercare vale o investimento?', a:'Sim — é o que evita crise de manchete no dia 1.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'Sandbox é o "rascunho" do sistema.',
+              'QA é o "ensaio".',
+              'PRD é o sistema de verdade.',
+              'Hypercare é o "ainda estamos aqui" depois do go-live.'
+            ],
+            qa:[
+              {q:'Vou testar no sistema novo?', a:'Sim, no UAT, com seus cenários reais.'},
+              {q:'E se eu errar no teste?', a:'Errar no teste é bom — é para isso que serve.'},
+              {q:'E no go-live?', a:'Tem time reforçado para te ajudar nos primeiros dias.'}
+            ]
+          }
+        }
+      },
+      {
+        n:7, badge:'Técnico leve',
+        title:'Como o MIG funciona',
+        objective:'Explicar o funcionamento da automação MIGNOW sem depender de jargão excessivo.',
+        topics:[
+          'Onde o MIG atua dentro do projeto (pré, durante, pós).',
+          'Como ele usa ferramentas e práticas SAP.',
+          'Leitura do ambiente e análise de objetos/pontos de ajuste.',
+          'Automação de atividades repetitivas vs decisões de negócio.',
+          'Segurança, governança, escalabilidade.',
+          'Linguagem para explicar para CIO, Basis, time de negócio e sponsor.'
+        ],
+        deliverables:[
+          'Explicação de 90 segundos sobre "como o MIG funciona".',
+          'FAQ técnico-comercial com perguntas reais que clientes fazem.',
+          'Apresentação "Como a MIGNOW automatiza a conversão com segurança".'
+        ],
+        media:[
+          {type:'Artigo', title:'Automação de migração SAP com IA', focus:'Entender o estado da arte'},
+          {type:'Artigo', title:'Como explicar tecnologia complexa em linguagem simples', focus:'Tradução para não-técnico'},
+          {type:'Podcast', title:'Automação e IA aplicada a projetos S/4', focus:'Inspiração de narrativa'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'MIG é automação que age sobre ferramentas SAP padrão.',
+              'Reduz esforço repetitivo e aumenta previsibilidade.',
+              'Cada ação é logada, auditável e reversível.',
+              'Aumenta capacidade da sua TI, não substitui.'
+            ],
+            qa:[
+              {q:'É um robô?', a:'É automação inteligente que executa tarefas pré-definidas com governança.'},
+              {q:'E auditoria?', a:'Cada execução tem trilha; logs servem para SOX/compliance.'},
+              {q:'Roda no meu ambiente?', a:'Atua sobre o seu SAP com camada de automação MIGNOW.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'O MIG lê o ambiente via ferramentas SAP (SIC, ATC, BDC).',
+              'Executa ajustes técnicos repetitivos por catálogo.',
+              'Não decide regra de negócio; isso fica com funcional.',
+              'Possui pontos de checagem manual em decisões críticas.'
+            ],
+            qa:[
+              {q:'Vai mexer no meu transporte?', a:'Sim, dentro do fluxo padrão de transportes do SAP, com governança.'},
+              {q:'E se algo der errado?', a:'Rollback técnico documentado e suporte do Solve Hub.'},
+              {q:'Como vocês evitam impacto em PRD?', a:'Atuação sempre primeiro em sandbox/QA, com promoção controlada.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'O MIG cuida do pesado técnico para liberar pessoas.',
+              'Decisões de negócio continuam com você.',
+              'Acelera entrega sem ferir governança.',
+              'É como um "piloto automático" da migração técnica.'
+            ],
+            qa:[
+              {q:'Robô vai decidir por mim?', a:'Não. Você decide o "o quê"; a máquina cuida do "como" técnico.'},
+              {q:'Quem aprova mudança?', a:'Você e seu time. A automação só executa o que foi aprovado.'},
+              {q:'Vou perder controle?', a:'Pelo contrário — tudo fica logado e visível.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Automação reduz dependência de hora-homem.',
+              'Aumenta previsibilidade do programa.',
+              'Mantém governança e auditoria como prioridade.',
+              'É argumento direto de modernização.'
+            ],
+            qa:[
+              {q:'É seguro?', a:'Sim, com logs, governança e controle por ambiente.'},
+              {q:'Posso mostrar para auditoria?', a:'Pode — todos os passos são rastreáveis.'},
+              {q:'Quanto economiza?', a:'Depende do escopo, mas tipicamente corta semanas e reduz erro humano.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'A automação trabalha por baixo, você não vê.',
+              'Você ganha um sistema novo mais rápido.',
+              'Menos retrabalho no time de TI.',
+              'Mesmo cuidado, menos atraso.'
+            ],
+            qa:[
+              {q:'Robô fala comigo?', a:'Não, ele atua no sistema; você fala com o time MIGNOW e da empresa.'},
+              {q:'Posso confiar?', a:'Sim, tudo é verificado por humanos antes de virar.'},
+              {q:'E erros?', a:'São detectados rápido por causa do log e da automação.'}
+            ]
+          }
+        }
+      },
+      {
+        n:8, badge:'Confiança',
+        title:'Precisão de escopo',
+        objective:'Aprender a vender sem prometer além do que a MIGNOW realmente entrega.',
+        topics:[
+          'O que é automatizado pela MIGNOW (escopo de software + serviços).',
+          'O que continua consultivo (decisões de negócio, desenho de processo).',
+          'O que depende do cliente.',
+          'O que é exceção / change request.',
+          'Limites de escopo, responsabilidades, fronteiras com outros fornecedores.',
+          'Como fazer alinhamento de expectativa com clareza.'
+        ],
+        deliverables:[
+          'Tabela "automatizado vs consultivo vs exceção".',
+          'Pitch de alinhamento de expectativa.',
+          'Script de resposta para objeções sobre escopo.'
+        ],
+        media:[
+          {type:'Artigo', title:'Gestão de expectativas em projetos de tecnologia', focus:'Comunicação de fronteira'},
+          {type:'Livro', title:'Negociação em vendas complexas', focus:'Acordo de escopo sustentável'},
+          {type:'Podcast', title:'"Bad deals" — como evitar escopo mal desenhado', focus:'Aprender com erros do mercado'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'Escopo claro hoje evita retrabalho amanhã.',
+              'A MIGNOW define o que faz e o que não faz.',
+              'Mudança fora do escopo é tratada como CR.',
+              'Transparência é parte do método.'
+            ],
+            qa:[
+              {q:'Como vocês tratam exceções?', a:'Classificamos, propomos resposta e tratamos como CR quando aplicável.'},
+              {q:'E se eu mudar o escopo?', a:'A gente repactua de forma documentada, sem surpresa.'},
+              {q:'Há limites?', a:'Sim, e eles ficam explícitos desde a proposta.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'Automação cobre catálogo definido de objetos/ações.',
+              'Fora do catálogo, entra como exceção tratada.',
+              'Decisão funcional não é automatizada.',
+              'Infra e licenças permanecem com o cliente, salvo combinação.'
+            ],
+            qa:[
+              {q:'E custom code não-padrão?', a:'Avaliamos: o que cabe na automação entra; o que não cabe vira CR.'},
+              {q:'E se aparecer algo no meio?', a:'Registramos, avaliamos impacto, decidimos junto.'},
+              {q:'Quem faz cutover?', a:'Time conjunto, com responsabilidades pré-definidas.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'Você sabe exatamente o que recebe.',
+              'Mudanças são possíveis, mas combinadas.',
+              'Sem promessa vaga.',
+              'Tudo o que está fora vira proposta clara.'
+            ],
+            qa:[
+              {q:'Posso adicionar coisa depois?', a:'Pode, via change request, com prazo e custo definidos.'},
+              {q:'E se sair do escopo?', a:'Conversa aberta, sem cobrança escondida.'},
+              {q:'Como medem entrega?', a:'Por marcos e aceite formal.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Escopo claro é proteção do business case.',
+              'Reduz risco de overrun.',
+              'Fortalece relação fornecedor-cliente.',
+              'Permite reportar avanço com confiança.'
+            ],
+            qa:[
+              {q:'Como evitar surpresa de custo?', a:'Escopo, CRs documentados e ritos formais de acompanhamento.'},
+              {q:'E pressão para entregar mais?', a:'Tratada com transparência e impacto claro.'},
+              {q:'Posso comparar com outros?', a:'Sim, a clareza do escopo facilita comparação justa.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'O que muda no seu trabalho fica explicado.',
+              'Mudanças extras vêm pelo canal certo.',
+              'Você não recebe "promessa" sem dono.',
+              'Tudo é registrado e visível.'
+            ],
+            qa:[
+              {q:'E se eu quiser uma melhoria?', a:'Encaminhe pelo canal — avaliamos como CR ou backlog.'},
+              {q:'E se ficar travado?', a:'Tem rota de escalonamento definida.'},
+              {q:'Posso pedir mudança no Fiori?', a:'Sim, dentro do que clean core permite.'}
+            ]
+          }
+        }
+      },
+      {
+        n:9, badge:'Estratégico',
+        title:'Clean Core e modernização',
+        objective:'Entender Clean Core como conversa estratégica, não só técnica.',
+        topics:[
+          'Conceito de Clean Core (segundo SAP).',
+          'Por que isso importa no S/4HANA (upgrade contínuo, cloud, governança).',
+          'Modernização de objetos: ALV → Fiori, RFC → OData/API, PI/PO → CPI etc.',
+          'Extensibilidade segura, released APIs, BTP.',
+          'Impacto em custo de manutenção, inovação e risco.',
+          'Como posicionar Clean Core na jornada do cliente e no discurso MIGNOW.'
+        ],
+        deliverables:[
+          'Pitch de Clean Core para CIO.',
+          'Pitch de Clean Core para Basis.',
+          'Apresentação "Clean Core como próxima conversa estratégica".'
+        ],
+        media:[
+          {type:'Artigo SAP', title:'Clean Core em S/4HANA', focus:'Fundamentos pelo fabricante'},
+          {type:'Artigo', title:'Extensibilidade e released APIs', focus:'Caminho técnico moderno'},
+          {type:'Podcast', title:'Establishing a Clean Core', focus:'Casos práticos e narrativa'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'Clean Core reduz custo de cada upgrade futuro.',
+              'Destrava IA, cloud e analytics modernos.',
+              'Protege o investimento da empresa em SAP.',
+              'É argumento direto de governança.'
+            ],
+            qa:[
+              {q:'Por que se importar agora?', a:'Porque cada Z não-padrão pesa em todo upgrade e em cada movimento para cloud.'},
+              {q:'Quanto custa?', a:'Custa menos que continuar pagando manutenção de customização não-padrão.'},
+              {q:'Como começar?', a:'Inventário, classificação e modernização por ondas.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'ALV vira Fiori; RFC vira OData/API.',
+              'PI/PO migra para CPI quando faz sentido.',
+              'Released APIs são o caminho oficial de extensão.',
+              'BTP recebe customização fora do core.'
+            ],
+            qa:[
+              {q:'Z vai morrer?', a:'Z que duplica padrão sim; o resto migra para extensão segura.'},
+              {q:'CPI sempre?', a:'Para novas integrações, sim; legado migra por prioridade.'},
+              {q:'E performance?', a:'Em geral melhora, com OData bem desenhado.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'Sistema fica mais fácil de atualizar.',
+              'Você ganha telas e relatórios modernos.',
+              'Menos quebra em cada upgrade.',
+              'Inovação chega mais rápido.'
+            ],
+            qa:[
+              {q:'Vou perder meus relatórios?', a:'Não. Eles ganham versão moderna, mais rápida.'},
+              {q:'E minhas customizações?', a:'As que agregam valor são modernizadas; as duplicadas são eliminadas.'},
+              {q:'Quando vejo benefício?', a:'No próximo upgrade — bem mais leve e rápido.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Clean Core é narrativa pronta de modernização.',
+              'Reduz custo recorrente de manutenção.',
+              'Habilita IA SAP (Joule) com base sólida.',
+              'Demonstra cuidado com o futuro do investimento.'
+            ],
+            qa:[
+              {q:'O que entrego para o board?', a:'Mensagem de modernização tangível e economia futura.'},
+              {q:'É moda?', a:'É posicionamento oficial SAP. Quem não fizer paga mais depois.'},
+              {q:'Posso começar pequeno?', a:'Sim, por categoria de objeto ou por área.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'Suas telas viram Fiori mais simples.',
+              'Relatórios atualizam mais rápido.',
+              'Menos travamento em upgrade.',
+              'Mesmo trabalho, mais leve.'
+            ],
+            qa:[
+              {q:'Vou ter que aprender de novo?', a:'O essencial não muda; a experiência melhora.'},
+              {q:'E o que eu pedi customizado?', a:'O que faz sentido permanece, em formato moderno.'},
+              {q:'Quando começa?', a:'Em ondas dentro da jornada — você é informado antes.'}
+            ]
+          }
+        }
+      },
+      {
+        n:10, badge:'Prática',
+        title:'Venda consultiva MIGNOW',
+        objective:'Transformar conhecimento em conversa comercial de alto nível.',
+        topics:[
+          'Abertura de reunião e criação de contexto.',
+          'Discovery consultivo (perguntas boas, escuta ativa, leitura de cenário).',
+          'Narrativa de dor → risco → valor.',
+          'Construção de urgência e visão de futuro.',
+          'Condução de objeções técnicas e políticas.',
+          'Adaptação de linguagem para CIO, Basis, negócio e sponsor.',
+          'Como soar confiante diante de especialistas sem parecer arrogante.'
+        ],
+        deliverables:[
+          'Script de discovery por perfil (CIO, Basis, negócio).',
+          'Script de objeções mais comuns e resposta modelo.',
+          'Pitch final consolidado para "MIG Expert".'
+        ],
+        media:[
+          {type:'Livro', title:'The Challenger Sale — reframing, teaching, tailoring', focus:'Postura de desafio respeitoso'},
+          {type:'eBook', title:'Guia prático de consultative selling para tech', focus:'Aplicação direta'},
+          {type:'Podcast', title:'Vendas complexas B2B/tech (2 episódios)', focus:'Casos e técnicas'}
+        ],
+        audience:{
+          cio:{
+            bullets:[
+              'Abra com hipótese, não com perguntas óbvias.',
+              'Use dado de mercado para criar urgência.',
+              'Conecte o problema ao orçamento e roadmap.',
+              'Encerre com próximo passo claro.'
+            ],
+            qa:[
+              {q:'Por que devo te ouvir?', a:'Porque trago um padrão que CIOs como você estão usando para reduzir risco e custo da jornada SAP.'},
+              {q:'Como vocês diferem?', a:'Foco SAP + automação proprietária + jornada de continuidade.'},
+              {q:'O que precisa de mim?', a:'30 minutos para alinhar contexto e mais 30 para mostrar onde aplicaria.'}
+            ]
+          },
+          basis:{
+            bullets:[
+              'Mostre que entende SUM, DMO, SIC, ATC.',
+              'Reconheça complexidade antes de prometer.',
+              'Apresente automação como apoio, não substituição.',
+              'Use logs e governança como prova de cuidado.'
+            ],
+            qa:[
+              {q:'Vocês entendem nossa realidade?', a:'Entendemos. Inclusive o que normalmente trava no SUM em ambientes com muito Z.'},
+              {q:'Vou perder controle?', a:'Pelo contrário — você ganha visibilidade ponta a ponta.'},
+              {q:'Por que confiar?', a:'Porque trabalhamos sobre as ferramentas que você já usa, com governança documentada.'}
+            ]
+          },
+          business:{
+            bullets:[
+              'Comece pela dor real de processo.',
+              'Mostre como o S/4 muda a rotina, não a tela.',
+              'Use exemplos concretos.',
+              'Termine com benefício mensurável.'
+            ],
+            qa:[
+              {q:'Por que isso é problema meu?', a:'Porque o ECC limita relatório em tempo real e dificulta integração com novos canais.'},
+              {q:'E se eu não fizer nada?', a:'Você continua pagando o custo escondido da operação manual.'},
+              {q:'Posso esperar?', a:'Pode, mas o custo de espera vai crescer.'}
+            ]
+          },
+          sponsor:{
+            bullets:[
+              'Conecte ao tema estratégico do board.',
+              'Mostre risco de não agir.',
+              'Apresente cronograma realista.',
+              'Encerre com convite a próximo passo.'
+            ],
+            qa:[
+              {q:'Por que agora?', a:'Porque a janela de suporte ao ECC é finita e mover sob pressão custa mais.'},
+              {q:'Posso confiar?', a:'Pode — temos cases e jornada modular para reduzir seu risco.'},
+              {q:'Como começo?', a:'Com um PreCheck, baixo investimento e alta clareza.'}
+            ]
+          },
+          user:{
+            bullets:[
+              'Fale do dia a dia.',
+              'Mostre como reduz cliques.',
+              'Use exemplos do trabalho real.',
+              'Promise menor, deliver maior.'
+            ],
+            qa:[
+              {q:'O que muda para mim?', a:'Telas mais simples, indicadores em tempo real, menos transação decorada.'},
+              {q:'É difícil aprender?', a:'O Fiori foi feito para ser fácil — testes em UAT validam isso.'},
+              {q:'Vou ser bem suportado?', a:'Sim, no hypercare existe time dedicado a você.'}
+            ]
+          }
+        }
+      }
+    ];
+
+    const GLOSSARY = [
+      ['RISE with SAP','Contrato único da SAP cobrindo licença, cloud e serviços de transformação.'],
+      ['BTP','Business Technology Platform. Onde vivem extensões, integrações e cenários de IA fora do core.'],
+      ['CPI','Cloud Integration. Plataforma de integração SAP em nuvem, substitui PI/PO em novas frentes.'],
+      ['CVI','Customer Vendor Integration. Migração de cliente/fornecedor para Business Partner.'],
+      ['BP','Business Partner. Cadastro unificado de cliente e fornecedor no S/4HANA.'],
+      ['Brownfield','Conversão preservando dados e customização do ECC para S/4.'],
+      ['Shell Conversion','Cópia da estrutura do sistema sem trazer dados transacionais. Útil quando o legado de dados é tóxico ou se quer recomeçar o ledger.'],
+      ['Selective Data Transmission','Abordagem de migração que traz apenas os dados relevantes do ECC para o S/4HANA — geralmente recortes por período, unidade ou critério funcional. Equilibra preservação de histórico com limpeza do legado.'],
+      ['System Copy','Cópia técnica de um sistema SAP para outro ambiente.'],
+      ['MIG Update','Produto MIGNOW de upgrade contínuo SAP. Aplica atualizações em ciclos curtos automatizados, evitando o "big bang" anual e mantendo o sistema sempre próximo da release atual.'],
+      ['SUM','Software Update Manager. Ferramenta SAP para upgrade e conversão.'],
+      ['DMO','Database Migration Option dentro do SUM. Migra para HANA durante upgrade.'],
+      ['SIC','Simplification Item Check. Avalia impactos da conversão para S/4.'],
+      ['ATC','ABAP Test Cockpit. Análise estática de código ABAP.'],
+      ['Downtime','Janela em que o sistema fica indisponível durante cutover.'],
+      ['Cutover','Conjunto de atividades para virar do sistema antigo para o novo.'],
+      ['Hypercare','Suporte reforçado nos primeiros dias/semanas pós go-live.'],
+      ['SIT','System Integration Test. Validação técnica das integrações entre sistemas.'],
+      ['UAT','User Acceptance Test. Usuário final valida seus cenários reais.'],
+      ['Clean Core','Manter o core SAP padrão, com extensões fora do core (BTP, released APIs).'],
+      ['Released API','API publicada e mantida pela SAP como contrato estável de extensão.'],
+      ['OData','Protocolo padrão de exposição de dados do SAP para apps Fiori e integrações.'],
+      ['Fiori','Camada de UX da SAP, baseada em apps, OData e launchpad.'],
+      ['Embedded Analytics','Analytics rodando dentro do S/4 sobre o próprio HANA, em tempo real.'],
+      ['HANA','Banco in-memory da SAP. Base do S/4HANA.'],
+      ['MATDOC','Tabela consolidada de documentos de material no S/4, substitui MKPF/MSEG.'],
+      ['ALV','ABAP List Viewer. Listagem clássica, alvo de modernização para Fiori.'],
+      ['RFC','Remote Function Call. Integração clássica, modernizada para OData/API.'],
+      ['PI/PO','Process Integration / Process Orchestration. Antecessor on-prem do CPI.'],
+      ['Sandbox','Ambiente para experimentação e teste destrutivo sem impacto.'],
+      ['QA','Quality Assurance. Ambiente de homologação e teste antes do PRD.'],
+      ['PRD','Produção. Ambiente real, com dado vivo.'],
+      ['Change Request (CR)','Solicitação formal de mudança de escopo, com impacto avaliado.'],
+      ['Solve Hub','Produto MIGNOW de estabilização e suporte com SLA.'],
+      ['PreCheck','Produto MIGNOW de assessment técnico inicial.'],
+      ['Tech Spec','Documento de especificação técnica que orienta o projeto.'],
+      ['Joule','Copiloto de IA da SAP integrado ao S/4 e BTP.']
+    ];
+
+    // ---------------- LÓGICA DE DATA / SEMANA ATIVA ----------------
+    function startOfDay(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
+    function daysDiff(a, b){
+      const ms = startOfDay(b) - startOfDay(a);
+      return Math.floor(ms / 86400000);
+    }
+    function todayKey(d){
+      d = d || new Date();
+      const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+    function fmtDate(d){
+      return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+    }
+    function currentWeekIndex(now){
+      now = now || new Date();
+      const diff = daysDiff(PLAN_START, now);
+      if (diff < 0) return 0;
+      const idx = Math.floor(diff / 7);
+      return Math.min(idx, WEEKS.length - 1);
+    }
+    function weekStartDate(weekIndex){
+      const d = new Date(PLAN_START);
+      d.setDate(d.getDate() + weekIndex * 7);
+      return d;
+    }
+    // Segunda da semana corrente (Mon-Sun strip)
+    function mondayOf(d){
+      const x = startOfDay(d);
+      const dow = x.getDay(); // 0=Dom..6=Sáb
+      const delta = dow === 0 ? -6 : (1 - dow);
+      x.setDate(x.getDate() + delta);
+      return x;
+    }
+
+    // ---------------- ESTADO ----------------
+    let state = {
+      daysCompleted: {},      // { 'YYYY-MM-DD': true }
+      streak: 0,
+      pillarsToday: { study:false, present:false, pitch:false },
+      currentDayKey: todayKey(),
+      history: {},            // { 'YYYY-MM-DD': {study,present,pitch} }
+      flashcards: {},         // { cardId: 'todo' | 'review' | 'known' }
+      presentations: []       // [{id,date,topic,audience,duration,score,wins,improve,createdAt}]
+    };
+
+    function loadState(){
+      try {
+        const d = storage.get(SKEY.done);
+        if (d) state.daysCompleted = JSON.parse(d) || {};
+      } catch(e){ state.daysCompleted = {}; }
+      const s = storage.get(SKEY.streak);
+      state.streak = s ? parseInt(s,10) || 0 : 0;
+      try {
+        const p = storage.get(SKEY.pillars);
+        if (p){
+          const parsed = JSON.parse(p);
+          if (parsed && parsed.key === state.currentDayKey){
+            state.pillarsToday = parsed.values || state.pillarsToday;
+          }
+        }
+      } catch(e){}
+      try {
+        const h = storage.get(SKEY.history);
+        if (h) state.history = JSON.parse(h) || {};
+      } catch(e){ state.history = {}; }
+      try {
+        const f = storage.get(SKEY.flashcards);
+        if (f) state.flashcards = JSON.parse(f) || {};
+      } catch(e){ state.flashcards = {}; }
+      try {
+        const pr = storage.get(SKEY.presentations);
+        if (pr) state.presentations = JSON.parse(pr) || [];
+        if (!Array.isArray(state.presentations)) state.presentations = [];
+      } catch(e){ state.presentations = []; }
+    }
+    function saveState(){
+      storage.set(SKEY.done, JSON.stringify(state.daysCompleted));
+      storage.set(SKEY.streak, String(state.streak));
+      storage.set(SKEY.pillars, JSON.stringify({ key: state.currentDayKey, values: state.pillarsToday }));
+      // grava snapshot dos pilares de hoje no histórico
+      state.history[state.currentDayKey] = { ...state.pillarsToday };
+      storage.set(SKEY.history, JSON.stringify(state.history));
+    }
+    function savePresentations(){ storage.set(SKEY.presentations, JSON.stringify(state.presentations)); }
+    function saveFlashcards(){ storage.set(SKEY.flashcards, JSON.stringify(state.flashcards)); }
+
+    function recomputeStreak(){
+      // streak = dias consecutivos terminando em hoje (ou ontem se hoje ainda não foi feito)
+      let count = 0;
+      let cursor = new Date();
+      cursor.setHours(0,0,0,0);
+      if (!state.daysCompleted[todayKey(cursor)]) {
+        // se hoje não feito, começa contagem a partir de ontem
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      while (state.daysCompleted[todayKey(cursor)]) {
+        count++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      state.streak = count;
+    }
+
+    // ---------------- RENDER ----------------
+    function $(id){ return document.getElementById(id); }
+
+    function renderKpis(){
+      const now = new Date();
+      $('kpiDate').textContent = fmtDate(now);
+      $('kpiDate').style.fontSize = 'var(--text-lg)';
+      $('kpiWeekday').textContent = WEEKDAYS_PT[now.getDay()];
+      const idx = currentWeekIndex(now);
+      const w = WEEKS[idx];
+      $('kpiWeekNum').textContent = 'S' + w.n;
+      $('kpiWeekTheme').textContent = w.title;
+      $('navTodayPill').textContent = 'S' + w.n;
+      const next = WEEKS[idx + 1];
+      if (next){
+        $('kpiNextWeek').textContent = 'S' + next.n + ' · ' + truncate(next.title, 38);
+        const nextStart = weekStartDate(idx + 1);
+        $('kpiNextDate').textContent = 'A partir de ' + fmtDate(nextStart);
+      } else {
+        $('kpiNextWeek').textContent = 'Consolidação';
+        $('kpiNextDate').textContent = 'Fim da trilha base';
+      }
+      // foco do dia rotativo por dia da semana
+      const focusByDow = {
+        1:'Estudo + apresentação',
+        2:'Subtema + CIO',
+        3:'Subtema + Basis',
+        4:'Roleplay objeções',
+        5:'Consolidação semanal',
+        6:'Revisão livre',
+        0:'Leitura/escuta'
+      };
+      $('kpiFocus').textContent = focusByDow[now.getDay()] || 'Foco livre';
+
+      // Semana atual destacada
+      $('currentWeekBadge').textContent = 'Semana ' + w.n;
+      $('currentWeekTitle').textContent = w.title;
+      $('currentWeekObjective').textContent = w.objective;
+      const ul = $('currentWeekTopics');
+      ul.innerHTML = '';
+      w.topics.slice(0,5).forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+      // Progresso da semana baseado em dias concluídos dentro da janela
+      const wStart = weekStartDate(idx);
+      const wEnd = new Date(wStart); wEnd.setDate(wEnd.getDate() + 6);
+      let done = 0, total = 7;
+      for (let i = 0; i < 7; i++){
+        const d = new Date(wStart); d.setDate(wStart.getDate() + i);
+        if (d > now) { /* futuro: não conta como possível ainda */ }
+        if (state.daysCompleted[todayKey(d)]) done++;
+      }
+      const pct = Math.round((done/total)*100);
+      $('currentWeekProgress').style.width = pct + '%';
+      $('currentWeekProgressLabel').textContent = done + ' de ' + total + ' dias concluídos nesta semana.';
+    }
+
+    function truncate(s, n){ return s.length > n ? s.slice(0, n-1) + '…' : s; }
+
+    function renderStreakArea(){
+      $('streakNumber').textContent = state.streak;
+      // Grade Seg-Dom da semana corrente do calendário
+      const today = startOfDay(new Date());
+      const mon = mondayOf(today);
+      const strip = $('weekStrip');
+      strip.innerHTML = '';
+      let weekDone = 0;
+      for (let i = 0; i < 7; i++){
+        const d = new Date(mon); d.setDate(mon.getDate() + i);
+        const key = todayKey(d);
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        if (state.daysCompleted[key]){ cell.classList.add('done'); weekDone++; }
+        if (key === todayKey(today)) cell.classList.add('today');
+        const label = document.createElement('div'); label.textContent = WEEKDAYS_SHORT[d.getDay()];
+        const num = document.createElement('div'); num.className = 'dnum'; num.textContent = d.getDate();
+        cell.appendChild(label); cell.appendChild(num);
+        strip.appendChild(cell);
+      }
+      const pct = Math.round((weekDone/7)*100);
+      $('weekProgress').style.width = pct + '%';
+      $('weekProgressLabel').textContent = weekDone + ' de 7 dias concluídos';
+      // Mensagem dinâmica
+      let msg;
+      if (state.streak === 0){
+        msg = 'Comece hoje marcando seus 3 pilares.';
+      } else if (state.streak >= 1 && state.streak <= 5){
+        const faltam = 7 - state.streak;
+        msg = `Faltam ${faltam} ${faltam === 1 ? 'dia' : 'dias'} para fechar sua meta de 7 dias.`;
+      } else {
+        msg = 'Sequência forte, proteja esse ritmo.';
+      }
+      $('streakMessage').textContent = msg;
+      // Status hoje
+      const isDone = !!state.daysCompleted[todayKey(today)];
+      $('dayStatusText').textContent = isDone ? 'Hoje concluído ✓' : 'Hoje ainda não foi concluído';
+      $('dayStatusText').style.color = isDone ? 'var(--color-success)' : 'var(--color-text-muted)';
+
+      // Pilares
+      $('pillarStudy').checked = !!state.pillarsToday.study;
+      $('pillarPresent').checked = !!state.pillarsToday.present;
+      $('pillarPitch').checked = !!state.pillarsToday.pitch;
+    }
+
+    function renderRoadmap(){
+      const list = $('roadmapList');
+      const idx = currentWeekIndex();
+      list.innerHTML = '';
+      WEEKS.forEach((w, i) => {
+        const item = document.createElement('div');
+        item.className = 'week-item' + (i === idx ? ' current' : '');
+        item.innerHTML = `
+          <div class="week-num">${w.n}</div>
+          <div>
+            <h4>${w.title}</h4>
+            <p>${w.objective}</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.35rem;align-items:flex-end">
+            <span class="pill ${i===idx ? '' : 'muted'}">${i===idx ? 'Semana atual' : w.badge}</span>
+            <button class="btn ghost" data-week="${i}" style="font-size:var(--text-xs);padding:.35rem .6rem">Abrir guia →</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+      list.querySelectorAll('button[data-week]').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const i = parseInt(e.currentTarget.getAttribute('data-week'), 10);
+          openWeekDetail(i);
+        });
+      });
+    }
+
+    function renderWeekSelect(){
+      const sel = $('weekSelect');
+      sel.innerHTML = '';
+      WEEKS.forEach((w, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `Semana ${w.n} — ${w.title}`;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener('change', e => {
+        openWeekDetail(parseInt(e.target.value, 10), false);
+      });
+    }
+
+    function renderWeekDetail(weekIndex){
+      const w = WEEKS[weekIndex];
+      const isCurrent = weekIndex === currentWeekIndex();
+      const container = $('weekDetailContent');
+      const start = weekStartDate(weekIndex);
+      const end = new Date(start); end.setDate(end.getDate() + 6);
+      container.innerHTML = `
+        <div class="week-deep">
+          <header>
+            <div style="display:flex;gap:.85rem;align-items:flex-start">
+              <div class="week-num" style="margin-top:.1rem">${w.n}</div>
+              <div>
+                <h3>${w.title}</h3>
+                <p class="obj">${w.objective}</p>
+                <p class="mini" style="margin-top:.35rem">${fmtDate(start)} → ${fmtDate(end)}</p>
+              </div>
+            </div>
+            <span class="pill ${isCurrent ? '' : 'muted'}">${isCurrent ? 'Semana atual' : w.badge}</span>
+          </header>
+
+          <div class="sub-grid">
+            <div>
+              <h5>Subtópicos</h5>
+              <ul class="bullet-list">
+                ${w.topics.map(t => `<li>${t}</li>`).join('')}
+              </ul>
+            </div>
+            <div>
+              <h5>Entregáveis da semana</h5>
+              <ul class="bullet-list">
+                ${w.deliverables.map(t => `<li>${t}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+
+          <h5 style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-top:1.1rem;margin-bottom:.3rem">Leitura e escuta complementar</h5>
+          <div class="media-grid">
+            ${w.media.map(m => `
+              <div class="media-card">
+                <div class="mtype">${m.type}</div>
+                <div class="mtitle">${m.title}</div>
+                <div class="mfocus">Foco: ${m.focus}</div>
+              </div>`).join('')}
+          </div>
+
+          <h5 style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);margin-top:1.1rem;margin-bottom:.5rem">Tradução por público</h5>
+          <div class="audience-tabs" data-week-tabs>
+            <button class="audience-tab active" data-aud="cio">CIO / CTO</button>
+            <button class="audience-tab" data-aud="basis">Basis / Arquiteto</button>
+            <button class="audience-tab" data-aud="business">Negócio</button>
+            <button class="audience-tab" data-aud="sponsor">Sponsor</button>
+            <button class="audience-tab" data-aud="user">Usuário-chave</button>
+          </div>
+          <div class="audience-block active" data-aud-block="cio">${renderAudience(w.audience.cio)}</div>
+          <div class="audience-block" data-aud-block="basis">${renderAudience(w.audience.basis)}</div>
+          <div class="audience-block" data-aud-block="business">${renderAudience(w.audience.business)}</div>
+          <div class="audience-block" data-aud-block="sponsor">${renderAudience(w.audience.sponsor)}</div>
+          <div class="audience-block" data-aud-block="user">${renderAudience(w.audience.user)}</div>
+        </div>
+      `;
+      // Bind tabs
+      const tabs = container.querySelectorAll('.audience-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.getAttribute('data-aud');
+          container.querySelectorAll('.audience-block').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-aud-block') === target);
+          });
+        });
+      });
+      $('weekSelect').value = String(weekIndex);
+    }
+
+    function renderAudience(a){
+      const bullets = a.bullets.map(b => `<li>${b}</li>`).join('');
+      const qa = a.qa.map(item => `<div><div class="q">P: ${item.q}</div><div class="a">R: ${item.a}</div></div>`).join('');
+      return `
+        <div class="sub-grid">
+          <div>
+            <h5>Como explicar este tema</h5>
+            <ul class="bullet-list">${bullets}</ul>
+          </div>
+          <div>
+            <h5>Perguntas típicas + respostas modelo</h5>
+            <div class="qa-list">${qa}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAudiencesOverview(){
+      const overview = [
+        {key:'cio', title:'CIO / CTO / Diretor de TI', role:'Decisor estratégico', bullets:['Linguagem: risco, custo, prazo, roadmap.','Quer previsibilidade e narrativa para o board.','Sensível a janela de suporte SAP.','Ancora em ROI e modernização.']},
+        {key:'basis', title:'Basis / Arquiteto / Infra SAP', role:'Guardião técnico', bullets:['Linguagem: SUM, DMO, SIC, ATC, transportes.','Quer governança, logs e controle.','Resiste a promessa vazia de automação.','Ancora em método e ferramentas SAP padrão.']},
+        {key:'business', title:'Gestor de negócio', role:'Dono de processo', bullets:['Linguagem: rotina, indicador, fechamento.','Quer impacto no dia a dia da área.','Sensível a tempo perdido em retrabalho.','Ancora em ganho de produtividade.']},
+        {key:'sponsor', title:'Sponsor executivo', role:'Patrocinador menos técnico', bullets:['Linguagem: estratégia, risco, imagem.','Quer narrativa pronta para o board.','Sensível a manchete ruim.','Ancora em business case e cronograma.']},
+        {key:'user', title:'Usuário-chave / Operação', role:'Operador no chão', bullets:['Linguagem: tela, clique, tarefa.','Quer simplicidade e suporte real.','Sensível a treinamento e mudança brusca.','Ancora em ganho prático imediato.']}
+      ];
+      const c = $('audiencesOverview');
+      c.innerHTML = overview.map(a => `
+        <div class="audience-card">
+          <h4>${a.title}</h4>
+          <div class="role">${a.role}</div>
+          <ul>${a.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+        </div>
+      `).join('');
+    }
+
+    // ---------------- GLOSSÁRIO EDITÁVEL ----------------
+    // Estrutura: [{ term, def, custom: boolean }]
+    let glossaryData = [];
+    let glossaryFilter = '';
+
+    function loadGlossary(){
+      // Base = lista vinda do código (não-custom). Sobreposições do usuário vêm do storage.
+      const base = GLOSSARY.map(([term, def]) => ({ term, def, custom: false }));
+      let saved = null;
+      try { saved = JSON.parse(storage.get(SKEY.glossary) || 'null'); } catch(e){}
+      if (!saved){
+        glossaryData = base;
+        return;
+      }
+      // Reconstrói preservando custos do usuário + alterações em termos base
+      const baseByTerm = Object.fromEntries(base.map(it => [it.term.toLowerCase(), it]));
+      const removedBase = new Set((saved.removedBase || []).map(t => t.toLowerCase()));
+      const editedBase = saved.editedBase || {}; // { termLower: { term, def } }
+      const customs = (saved.customs || []).map(it => ({ term: it.term, def: it.def, custom: true }));
+      const order = saved.order || base.map(it => it.term);
+
+      const merged = [];
+      // Itens base na ordem salva (sem os removidos), aplicando edições
+      order.forEach(t => {
+        const key = t.toLowerCase();
+        if (removedBase.has(key)) return;
+        const baseItem = baseByTerm[key];
+        if (baseItem){
+          const edit = editedBase[key];
+          merged.push({
+            term: edit ? edit.term : baseItem.term,
+            def: edit ? edit.def : baseItem.def,
+            custom: false
+          });
+        }
+      });
+      // Garantir que termos base novos (que ainda não estavam no order salvo) entrem no fim
+      base.forEach(it => {
+        const key = it.term.toLowerCase();
+        if (removedBase.has(key)) return;
+        if (!order.map(x => x.toLowerCase()).includes(key)){
+          const edit = editedBase[key];
+          merged.push({ term: edit ? edit.term : it.term, def: edit ? edit.def : it.def, custom: false });
+        }
+      });
+      // Adiciona customs do usuário
+      customs.forEach(c => merged.push(c));
+      glossaryData = merged;
+    }
+
+    function saveGlossary(){
+      const base = GLOSSARY.map(([term, def]) => ({ term, def }));
+      const baseByTerm = Object.fromEntries(base.map(it => [it.term.toLowerCase(), it]));
+      const presentBaseKeys = new Set(glossaryData.filter(it => !it.custom).map(it => baseByTermKey(it)));
+
+      // Removidos: base que sumiu
+      const removedBase = Object.keys(baseByTerm).filter(k => !presentBaseKeys.has(k));
+
+      // Editados: base presente com term/def diferentes do original
+      const editedBase = {};
+      glossaryData.filter(it => !it.custom).forEach(it => {
+        const key = baseByTermKey(it);
+        const orig = baseByTerm[key];
+        if (orig && (orig.term !== it.term || orig.def !== it.def)){
+          editedBase[key] = { term: it.term, def: it.def };
+        }
+      });
+
+      const customs = glossaryData.filter(it => it.custom).map(it => ({ term: it.term, def: it.def }));
+      const order = glossaryData.filter(it => !it.custom).map(it => it.term);
+
+      storage.set(SKEY.glossary, JSON.stringify({ removedBase, editedBase, customs, order }));
+    }
+
+    // baseByTermKey: tenta achar a chave base correspondente mesmo após edição do termo.
+    // Como não temos id, usamos lower(term) atual. Se foi renomeado, o registro original some.
+    function baseByTermKey(it){ return it.term.toLowerCase(); }
+
+    function renderGlossary(){
+      const c = $('glossaryList');
+      const q = glossaryFilter.trim().toLowerCase();
+      const filtered = glossaryData.filter(it =>
+        !q || it.term.toLowerCase().includes(q) || it.def.toLowerCase().includes(q)
+      );
+      $('glossaryCount').textContent =
+        (q ? `${filtered.length} de ${glossaryData.length} termos` : `${glossaryData.length} termos`) +
+        (glossaryData.some(it => it.custom) ? ' · inclui termos personalizados' : '');
+
+      if (filtered.length === 0){
+        c.innerHTML = `<div class="term" style="grid-column:1/-1;text-align:center;color:var(--color-text-muted)">Nenhum termo encontrado para "${escapeHtml(glossaryFilter)}".</div>`;
+        return;
+      }
+
+      c.innerHTML = filtered.map((it, idx) => {
+        const realIdx = glossaryData.indexOf(it);
+        return `
+        <div class="term" data-idx="${realIdx}">
+          <div class="term-head">
+            <strong>${escapeHtml(it.term)}${it.custom ? '<span class="term-badge">seu</span>' : ''}</strong>
+            <span class="term-caret">▶</span>
+          </div>
+          <div class="term-body">
+            <p>${escapeHtml(it.def)}</p>
+            <div class="term-actions">
+              <button data-act="edit">Editar</button>
+              <button data-act="remove" class="danger">Remover</button>
+            </div>
+          </div>
+          <div class="term-edit">
+            <input type="text" data-field="term" value="${escapeAttr(it.term)}" placeholder="Termo" />
+            <textarea data-field="def" placeholder="Definição em linguagem simples...">${escapeHtml(it.def)}</textarea>
+            <div class="term-edit-actions">
+              <button class="btn" data-act="cancel">Cancelar</button>
+              <button class="btn primary" data-act="save">Salvar</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      bindGlossaryItemEvents();
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+    function escapeAttr(s){ return escapeHtml(s); }
+
+    function bindGlossaryItemEvents(){
+      document.querySelectorAll('#glossaryList .term').forEach(el => {
+        const idx = parseInt(el.getAttribute('data-idx'), 10);
+        const head = el.querySelector('.term-head');
+        head.addEventListener('click', () => {
+          el.classList.toggle('expanded');
+        });
+        el.querySelectorAll('button[data-act]').forEach(btn => {
+          btn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const act = btn.getAttribute('data-act');
+            if (act === 'edit'){
+              el.classList.add('editing');
+              el.classList.add('expanded');
+              el.querySelector('input[data-field="term"]').focus();
+            } else if (act === 'cancel'){
+              el.classList.remove('editing');
+              // restaura valores originais
+              el.querySelector('input[data-field="term"]').value = glossaryData[idx].term;
+              el.querySelector('textarea[data-field="def"]').value = glossaryData[idx].def;
+            } else if (act === 'save'){
+              const newTerm = el.querySelector('input[data-field="term"]').value.trim();
+              const newDef = el.querySelector('textarea[data-field="def"]').value.trim();
+              if (!newTerm){ alert('O termo não pode ficar vazio.'); return; }
+              glossaryData[idx] = {
+                term: newTerm,
+                def: newDef,
+                custom: glossaryData[idx].custom
+              };
+              saveGlossary();
+              renderGlossary();
+            } else if (act === 'remove'){
+              if (!confirm(`Remover "${glossaryData[idx].term}"?`)) return;
+              glossaryData.splice(idx, 1);
+              saveGlossary();
+              renderGlossary();
+            }
+          });
+        });
+      });
+    }
+
+    function addNewTerm(){
+      glossaryData.push({ term: 'Novo termo', def: '', custom: true });
+      saveGlossary();
+      glossaryFilter = '';
+      $('glossarySearch').value = '';
+      renderGlossary();
+      // Abre direto em edição no termo recém-criado
+      const items = document.querySelectorAll('#glossaryList .term');
+      const last = items[items.length - 1];
+      if (last){
+        last.classList.add('editing','expanded');
+        last.scrollIntoView({behavior:'smooth', block:'center'});
+        const input = last.querySelector('input[data-field="term"]');
+        if (input){ input.focus(); input.select(); }
+      }
+    }
+
+    function bindGlossaryToolbar(){
+      $('glossarySearch').addEventListener('input', (e) => {
+        glossaryFilter = e.target.value || '';
+        renderGlossary();
+      });
+      $('glossaryExpandAll').addEventListener('click', () => {
+        document.querySelectorAll('#glossaryList .term').forEach(t => t.classList.add('expanded'));
+      });
+      $('glossaryCollapseAll').addEventListener('click', () => {
+        document.querySelectorAll('#glossaryList .term').forEach(t => { t.classList.remove('expanded'); t.classList.remove('editing'); });
+      });
+      $('glossaryAddBtn').addEventListener('click', addNewTerm);
+    }
+
+    function openWeekDetail(i, switchPanel){
+      if (switchPanel !== false) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelector('[data-target="weekdetail"]').classList.add('active');
+        document.getElementById('weekdetail').classList.add('active');
+      }
+      renderWeekDetail(i);
+      document.querySelector('.main').scrollTo({top:0, behavior:'smooth'});
+    }
+
+    // ---------------- AÇÕES ----------------
+    function bindPillars(){
+      const onChange = () => {
+        state.pillarsToday = {
+          study: $('pillarStudy').checked,
+          present: $('pillarPresent').checked,
+          pitch: $('pillarPitch').checked
+        };
+        saveState();
+      };
+      ['pillarStudy','pillarPresent','pillarPitch'].forEach(id => {
+        $(id).addEventListener('change', onChange);
+      });
+    }
+
+    function closeDay(){
+      const all = state.pillarsToday.study && state.pillarsToday.present && state.pillarsToday.pitch;
+      if (!all){
+        // marca todos como concluídos por intenção do usuário ao clicar no botão
+        state.pillarsToday = { study:true, present:true, pitch:true };
+        $('pillarStudy').checked = true;
+        $('pillarPresent').checked = true;
+        $('pillarPitch').checked = true;
+      }
+      const key = todayKey(new Date());
+      state.daysCompleted[key] = true;
+      recomputeStreak();
+      saveState();
+      renderAll();
+    }
+
+    function clearDay(){
+      const key = todayKey(new Date());
+      delete state.daysCompleted[key];
+      state.pillarsToday = { study:false, present:false, pitch:false };
+      $('pillarStudy').checked = false;
+      $('pillarPresent').checked = false;
+      $('pillarPitch').checked = false;
+      recomputeStreak();
+      saveState();
+      renderAll();
+    }
+
+    // ---------------- NOTAS + CHECKBOXES ----------------
+    function bindNotes(){
+      const ta = $('weekNotes');
+      ta.value = storage.get(SKEY.notes) || '';
+      let t;
+      ta.addEventListener('input', () => {
+        clearTimeout(t);
+        t = setTimeout(() => storage.set(SKEY.notes, ta.value), 250);
+      });
+    }
+    function bindChecks(){
+      // restaurar
+      let saved = {};
+      try { saved = JSON.parse(storage.get(SKEY.checks) || '{}'); } catch(e){}
+      document.querySelectorAll('.check-item[data-key]').forEach(label => {
+        const key = label.getAttribute('data-key');
+        const cb = label.querySelector('input[type="checkbox"]');
+        if (saved[key]) cb.checked = true;
+        cb.addEventListener('change', () => {
+          saved[key] = cb.checked;
+          storage.set(SKEY.checks, JSON.stringify(saved));
+        });
+      });
+    }
+
+    // ---------------- NAV / TEMA ----------------
+    function bindNav(){
+      const navButtons = document.querySelectorAll('.nav-btn');
+      const panels = document.querySelectorAll('.panel');
+      navButtons.forEach(btn => btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+        if (btn.dataset.target === 'weekdetail'){
+          renderWeekDetail(parseInt($('weekSelect').value || currentWeekIndex(), 10));
+        }
+      }));
+      $('goToWeekDetail').addEventListener('click', () => {
+        openWeekDetail(currentWeekIndex());
+      });
+    }
+
+    function bindTheme(){
+      const root = document.documentElement;
+      const themeToggle = $('themeToggle');
+      let saved = storage.get(SKEY.theme);
+      let theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      root.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      themeToggle.addEventListener('click', () => {
+        theme = theme === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', theme);
+        themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        storage.set(SKEY.theme, theme);
+      });
+    }
+
+    function bindExport(){
+      $('exportBtn').addEventListener('click', () => {
+        const idx = currentWeekIndex();
+        const w = WEEKS[idx];
+        const lines = [
+          'PLANO MIG EXPERT — Resumo de execução',
+          '',
+          `Data: ${fmtDate(new Date())} (${WEEKDAYS_PT[new Date().getDay()]})`,
+          `Semana ativa: ${w.n} — ${w.title}`,
+          `Objetivo: ${w.objective}`,
+          `Streak atual: ${state.streak} dia(s)`,
+          '',
+          'Subtópicos da semana:',
+          ...w.topics.map(t => '- ' + t),
+          '',
+          'Entregáveis:',
+          ...w.deliverables.map(t => '- ' + t),
+          '',
+          'Leitura/escuta:',
+          ...w.media.map(m => `- [${m.type}] ${m.title} (foco: ${m.focus})`),
+          '',
+          'Roadmap completo:',
+          ...WEEKS.map(x => `${x.n}. ${x.title}`)
+        ];
+        const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'plano-mig-expert.txt';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+    }
+
+    function bindStreakActions(){
+      $('closeDayBtn').addEventListener('click', closeDay);
+      $('clearDayBtn').addEventListener('click', clearDay);
+    }
+
+    function renderAll(){
+      renderKpis();
+      renderStreakArea();
+      renderRoadmap();
+      if (typeof renderHistory === 'function' && document.getElementById('historyHeatmap')){
+        renderHistory();
+      }
+    }
+
+    // ================================================================
+    // ===== BACKUP / IMPORTAR PROGRESSO (JSON) =======================
+    // ================================================================
+    function buildBackup(){
+      const dump = {};
+      Object.keys(SKEY).forEach(k => {
+        const v = storage.get(SKEY[k]);
+        if (v !== undefined && v !== null) dump[SKEY[k]] = v;
+      });
+      return {
+        app: 'MIG Expert Dashboard',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        data: dump
+      };
+    }
+    function downloadBackup(){
+      const payload = buildBackup();
+      const json = JSON.stringify(payload, null, 2);
+      const blob = new Blob([json], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const stamp = todayKey().replace(/-/g,'');
+      a.download = `mig-expert-backup-${stamp}.json`;
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 100);
+    }
+    function applyBackup(payload){
+      if (!payload || typeof payload !== 'object' || !payload.data) {
+        throw new Error('Arquivo inválido. Selecione um JSON de backup do MIG Expert.');
+      }
+      const data = payload.data;
+      Object.keys(data).forEach(k => {
+        if (typeof k === 'string' && k.startsWith('mig.')){
+          storage.set(k, String(data[k]));
+        }
+      });
+    }
+    function bindBackupImport(){
+      const bBtn = $('backupBtn');
+      const iBtn = $('importBtn');
+      const file = $('importFile');
+      if (bBtn) bBtn.addEventListener('click', downloadBackup);
+      if (iBtn && file){
+        iBtn.addEventListener('click', () => file.click());
+        file.addEventListener('change', e => {
+          const f = e.target.files && e.target.files[0];
+          if (!f) return;
+          const reader = new FileReader();
+          reader.onload = ev => {
+            try {
+              const json = JSON.parse(ev.target.result);
+              if (!confirm('Importar este backup vai sobrescrever seu progresso atual. Continuar?')) {
+                file.value = ''; return;
+              }
+              applyBackup(json);
+              loadState();
+              recomputeStreak();
+              loadGlossary();
+              renderGlossary();
+              renderWeekDetail(currentWeekIndex());
+              renderAll();
+              renderHistory();
+              renderFlashcards();
+              renderPresentations();
+              alert('Backup importado com sucesso.');
+            } catch(err){
+              alert('Falha ao importar: ' + (err.message || err));
+            } finally {
+              file.value = '';
+            }
+          };
+          reader.readAsText(f);
+        });
+      }
+    }
+
+    // ================================================================
+    // ===== HISTÓRICO DE PILARES (heatmap 30 dias) ===================
+    // ================================================================
+    function historyDayKey(d){ return todayKey(d); }
+    function pillarsCountForDay(key){
+      const h = state.history[key];
+      if (!h) return 0;
+      return (h.study?1:0) + (h.present?1:0) + (h.pitch?1:0);
+    }
+    function renderHistory(){
+      const root = $('historyHeatmap');
+      const stats = $('historyStats');
+      const bd = $('pillarBreakdown');
+      if (!root) return;
+
+      const days = 30;
+      const today = startOfDay(new Date());
+      // 30 dias terminando em "hoje + alguns futuros" — vamos mostrar últimos 30 incluindo hoje
+      const cells = [];
+      for (let i = days - 1; i >= 0; i--){
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const key = historyDayKey(d);
+        const cnt = pillarsCountForDay(key);
+        const isToday = key === historyDayKey(today);
+        cells.push({date:d, key, cnt, isToday});
+      }
+      root.innerHTML = '';
+      cells.forEach(c => {
+        const el = document.createElement('div');
+        el.className = 'hm-cell hm-' + c.cnt + (c.isToday ? ' hm-today' : '');
+        const dStr = c.date.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        const wd = WEEKDAYS_SHORT[c.date.getDay()];
+        const tip = document.createElement('div');
+        tip.className = 'hm-tip';
+        const h = state.history[c.key] || {};
+        const lbl = [];
+        if (h.study) lbl.push('Estudo');
+        if (h.present) lbl.push('Apresentação');
+        if (h.pitch) lbl.push('Pitch');
+        tip.textContent = `${wd} ${dStr} — ${c.cnt}/3 ${lbl.length ? '(' + lbl.join(', ') + ')' : ''}`;
+        el.appendChild(tip);
+        root.appendChild(el);
+      });
+
+      // stats
+      const total = cells.length;
+      const complete = cells.filter(c => c.cnt === 3).length;
+      const partial = cells.filter(c => c.cnt > 0 && c.cnt < 3).length;
+      const zero = cells.filter(c => c.cnt === 0).length;
+      const pct = Math.round((complete / total) * 100);
+      stats.innerHTML = `
+        <div class="card pad kpi"><div class="label">Dias completos</div><div class="value">${complete}</div><div class="sub">de ${total} dias</div></div>
+        <div class="card pad kpi"><div class="label">Dias parciais</div><div class="value">${partial}</div><div class="sub">algum pilar</div></div>
+        <div class="card pad kpi"><div class="label">Dias zerados</div><div class="value">${zero}</div><div class="sub">sem progresso</div></div>
+        <div class="card pad kpi"><div class="label">Taxa de consistência</div><div class="value">${pct}%</div><div class="sub">dias 3/3 nos últimos 30</div></div>
+      `;
+
+      // breakdown por pilar
+      const counts = {study:0, present:0, pitch:0};
+      cells.forEach(c => {
+        const h = state.history[c.key]; if (!h) return;
+        if (h.study) counts.study++;
+        if (h.present) counts.present++;
+        if (h.pitch) counts.pitch++;
+      });
+      const items = [
+        {key:'study', name:'Estudo principal', count:counts.study},
+        {key:'present', name:'Apresentação do dia', count:counts.present},
+        {key:'pitch', name:'Revisão de pitch', count:counts.pitch}
+      ];
+      bd.innerHTML = '';
+      items.forEach(it => {
+        const pct = Math.round((it.count/total)*100);
+        const el = document.createElement('div');
+        el.className = 'pb-item';
+        el.innerHTML = `
+          <div class="pb-name">${escapeHtml(it.name)}</div>
+          <div class="mini">${it.count} de ${total} dias (${pct}%)</div>
+          <div class="pb-bar"><div class="pb-fill" style="width:${pct}%"></div></div>
+        `;
+        bd.appendChild(el);
+      });
+    }
+
+    // ================================================================
+    // ===== FLASHCARDS — banco de perguntas extraído dos Q&A =========
+    // ================================================================
+    function buildFlashcards(){
+      // Extrai todos os Q&A do WEEKS para virar flashcards
+      const audMap = {cio:'CIO / CTO', basis:'Basis / Arquiteto', business:'Negócio', sponsor:'Sponsor', user:'Usuário-chave'};
+      const cards = [];
+      WEEKS.forEach(w => {
+        if (!w.audience) return;
+        Object.keys(w.audience).forEach(aud => {
+          const block = w.audience[aud];
+          if (!block || !Array.isArray(block.qa)) return;
+          block.qa.forEach((qa, idx) => {
+            cards.push({
+              id: `w${w.n}-${aud}-${idx}`,
+              week: w.n,
+              weekTitle: w.title,
+              audience: aud,
+              audienceLabel: audMap[aud] || aud,
+              question: qa.q,
+              answer: qa.a
+            });
+          });
+        });
+      });
+      return cards;
+    }
+
+    const fcState = {
+      all: [],
+      filtered: [],
+      index: 0,
+      flipped: false,
+      week: 'all',
+      status: 'all'
+    };
+
+    function fcApplyFilter(){
+      fcState.filtered = fcState.all.filter(c => {
+        if (fcState.week !== 'all' && String(c.week) !== String(fcState.week)) return false;
+        const st = state.flashcards[c.id] || 'todo';
+        if (fcState.status === 'todo' && st !== 'todo') return false;
+        if (fcState.status === 'review' && st !== 'review') return false;
+        if (fcState.status === 'known' && st !== 'known') return false;
+        return true;
+      });
+      if (fcState.index >= fcState.filtered.length) fcState.index = 0;
+    }
+
+    function fcRender(){
+      const card = $('fcCard');
+      const front = card ? card.querySelector('.fc-front') : null;
+      const back = card ? card.querySelector('.fc-back') : null;
+      const counter = $('fcCounter');
+      const progress = $('fcProgress');
+      if (!card) return;
+      if (!fcState.filtered.length){
+        card.style.display = 'none';
+        counter.innerHTML = '<div class="fc-empty">Nenhum flashcard para esses filtros. Tente outro status ou semana.</div>';
+        if (progress) progress.textContent = '';
+        return;
+      }
+      card.style.display = '';
+      const c = fcState.filtered[fcState.index];
+      const st = state.flashcards[c.id] || 'todo';
+      const stLabel = st === 'known' ? 'Já sei' : st === 'review' ? 'Para revisar' : 'Pendente';
+      $('fcQuestion').textContent = c.question;
+      $('fcAnswer').textContent = c.answer;
+      $('fcTag').textContent = `Semana ${c.week}`;
+      $('fcAudience').textContent = c.audienceLabel;
+      counter.innerHTML = `Carta ${fcState.index + 1} de ${fcState.filtered.length} <span class="fc-status-badge ${st}">${stLabel}</span>`;
+      // flip state
+      if (fcState.flipped){
+        front.classList.remove('active'); back.classList.add('active');
+      } else {
+        front.classList.add('active'); back.classList.remove('active');
+      }
+      // progresso global
+      const total = fcState.all.length;
+      const known = fcState.all.filter(x => state.flashcards[x.id] === 'known').length;
+      const review = fcState.all.filter(x => state.flashcards[x.id] === 'review').length;
+      const pct = total ? Math.round((known/total)*100) : 0;
+      if (progress) progress.textContent = `Progresso geral: ${known}/${total} já sei (${pct}%) · ${review} para revisar`;
+    }
+    function fcFlip(){ fcState.flipped = !fcState.flipped; fcRender(); }
+    function fcNext(){ if (!fcState.filtered.length) return; fcState.index = (fcState.index + 1) % fcState.filtered.length; fcState.flipped = false; fcRender(); }
+    function fcPrev(){ if (!fcState.filtered.length) return; fcState.index = (fcState.index - 1 + fcState.filtered.length) % fcState.filtered.length; fcState.flipped = false; fcRender(); }
+    function fcMark(status){
+      if (!fcState.filtered.length) return;
+      const c = fcState.filtered[fcState.index];
+      state.flashcards[c.id] = status;
+      saveFlashcards();
+      // reaplica filtro caso o card tenha saído do conjunto
+      fcApplyFilter();
+      if (fcState.index >= fcState.filtered.length) fcState.index = Math.max(0, fcState.filtered.length - 1);
+      fcState.flipped = false;
+      fcRender();
+    }
+    function fcShuffle(){
+      for (let i = fcState.filtered.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [fcState.filtered[i], fcState.filtered[j]] = [fcState.filtered[j], fcState.filtered[i]];
+      }
+      fcState.index = 0; fcState.flipped = false; fcRender();
+    }
+    function fcResetProgress(){
+      if (!confirm('Zerar todo o progresso dos flashcards?')) return;
+      state.flashcards = {};
+      saveFlashcards();
+      fcApplyFilter();
+      fcRender();
+    }
+    function renderFlashcards(){
+      // popular select de semanas
+      const wsel = $('fcWeek');
+      if (wsel && !wsel.options.length){
+        const optAll = document.createElement('option');
+        optAll.value = 'all'; optAll.textContent = 'Todas as semanas';
+        wsel.appendChild(optAll);
+        WEEKS.forEach(w => {
+          const o = document.createElement('option');
+          o.value = String(w.n);
+          o.textContent = `S${w.n} — ${w.title.length > 38 ? w.title.slice(0,38)+'…' : w.title}`;
+          wsel.appendChild(o);
+        });
+      }
+      if (!fcState.all.length) fcState.all = buildFlashcards();
+      fcApplyFilter();
+      fcRender();
+    }
+    function bindFlashcards(){
+      const card = $('fcCard');
+      if (card){
+        card.addEventListener('click', fcFlip);
+        card.addEventListener('keydown', e => {
+          if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); fcFlip(); }
+          if (e.key === 'ArrowRight') fcNext();
+          if (e.key === 'ArrowLeft') fcPrev();
+        });
+      }
+      const wsel = $('fcWeek'); if (wsel) wsel.addEventListener('change', e => { fcState.week = e.target.value; fcState.index = 0; fcApplyFilter(); fcRender(); });
+      const ssel = $('fcStatus'); if (ssel) ssel.addEventListener('change', e => { fcState.status = e.target.value; fcState.index = 0; fcApplyFilter(); fcRender(); });
+      const next = $('fcNext'); if (next) next.addEventListener('click', e => { e.stopPropagation(); fcNext(); });
+      const prev = $('fcPrev'); if (prev) prev.addEventListener('click', e => { e.stopPropagation(); fcPrev(); });
+      const kn = $('fcKnown'); if (kn) kn.addEventListener('click', e => { e.stopPropagation(); fcMark('known'); });
+      const rv = $('fcReview'); if (rv) rv.addEventListener('click', e => { e.stopPropagation(); fcMark('review'); });
+      const sh = $('fcShuffle'); if (sh) sh.addEventListener('click', fcShuffle);
+      const rs = $('fcReset'); if (rs) rs.addEventListener('click', fcResetProgress);
+    }
+
+    // ================================================================
+    // ===== APRESENTAÇÕES REAIS (tracker) ============================
+    // ================================================================
+    const PRES_AUDIENCE_LABEL = {
+      cio:'CIO / CTO', basis:'Basis / Arquiteto', business:'Negócio',
+      sponsor:'Sponsor', user:'Usuário-chave', interno:'Treino interno'
+    };
+    let presEditingId = null;
+
+    function presResetForm(){
+      $('presDate').value = todayKey();
+      $('presTopic').value = '';
+      $('presAudience').value = 'cio';
+      $('presDuration').value = '';
+      $('presScore').value = '4';
+      $('presWins').value = '';
+      $('presImprove').value = '';
+      $('presSubmit').textContent = 'Salvar apresentação';
+      $('presCancel').hidden = true;
+      presEditingId = null;
+    }
+    function presPopulateForm(it){
+      $('presDate').value = it.date;
+      $('presTopic').value = it.topic;
+      $('presAudience').value = it.audience;
+      $('presDuration').value = it.duration || '';
+      $('presScore').value = String(it.score);
+      $('presWins').value = it.wins || '';
+      $('presImprove').value = it.improve || '';
+      $('presSubmit').textContent = 'Atualizar apresentação';
+      $('presCancel').hidden = false;
+      presEditingId = it.id;
+      window.scrollTo({top: $('presForm').offsetTop - 80, behavior:'smooth'});
+    }
+    function presHandleSubmit(e){
+      e.preventDefault();
+      const it = {
+        id: presEditingId || ('p' + Date.now() + Math.random().toString(36).slice(2,7)),
+        date: $('presDate').value || todayKey(),
+        topic: ($('presTopic').value || '').trim(),
+        audience: $('presAudience').value,
+        duration: parseInt($('presDuration').value, 10) || null,
+        score: parseInt($('presScore').value, 10) || 3,
+        wins: ($('presWins').value || '').trim(),
+        improve: ($('presImprove').value || '').trim(),
+        createdAt: new Date().toISOString()
+      };
+      if (!it.topic){ alert('Informe o tema/cliente.'); return; }
+      if (presEditingId){
+        const idx = state.presentations.findIndex(p => p.id === presEditingId);
+        if (idx >= 0) state.presentations[idx] = { ...state.presentations[idx], ...it };
+      } else {
+        state.presentations.push(it);
+      }
+      savePresentations();
+      presResetForm();
+      renderPresentations();
+    }
+    function presDelete(id){
+      if (!confirm('Remover esta apresentação do histórico?')) return;
+      state.presentations = state.presentations.filter(p => p.id !== id);
+      savePresentations();
+      renderPresentations();
+    }
+    function renderPresentations(){
+      const list = $('presList');
+      const stats = $('presStats');
+      if (!list) return;
+      // stats
+      const items = [...state.presentations].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+      const total = items.length;
+      const avg = total ? (items.reduce((s,x)=>s+(x.score||0),0)/total) : 0;
+      // últimos 30 dias
+      const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
+      const last30 = items.filter(x => x.date && new Date(x.date+'T00:00:00') >= cutoff).length;
+      const byAud = {};
+      items.forEach(x => { byAud[x.audience] = (byAud[x.audience]||0)+1; });
+      const topAud = Object.keys(byAud).sort((a,b)=> byAud[b]-byAud[a])[0];
+      stats.innerHTML = `
+        <div class="card pad kpi"><div class="label">Total registradas</div><div class="value">${total}</div><div class="sub">desde o início</div></div>
+        <div class="card pad kpi"><div class="label">Últimos 30 dias</div><div class="value">${last30}</div><div class="sub">apresentações</div></div>
+        <div class="card pad kpi"><div class="label">Nota média</div><div class="value">${total ? avg.toFixed(1) : '—'}</div><div class="sub">autoavaliação 1-5</div></div>
+        <div class="card pad kpi"><div class="label">Público mais frequente</div><div class="value">${topAud ? (PRES_AUDIENCE_LABEL[topAud]||topAud) : '—'}</div><div class="sub">onde você mais atua</div></div>
+      `;
+      // lista
+      list.innerHTML = '';
+      if (!items.length){
+        const empty = document.createElement('div');
+        empty.className = 'pres-empty';
+        empty.textContent = 'Nenhuma apresentação registrada ainda. Use o formulário acima após cada apresentação real.';
+        list.appendChild(empty);
+        return;
+      }
+      items.forEach(it => {
+        const el = document.createElement('div');
+        el.className = 'pres-item';
+        const dateStr = it.date ? new Date(it.date+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+        const audLbl = PRES_AUDIENCE_LABEL[it.audience] || it.audience;
+        const dur = it.duration ? ` · ${it.duration} min` : '';
+        const score = parseInt(it.score,10) || 3;
+        el.innerHTML = `
+          <div>
+            <div class="pres-head">
+              <span class="pres-topic">${escapeHtml(it.topic)}</span>
+              <span class="tag">${escapeHtml(audLbl)}</span>
+            </div>
+            <div class="pres-meta">${escapeHtml(dateStr)}${escapeHtml(dur)}</div>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <span class="pres-score s${score}">${score}</span>
+          </div>
+          <div class="pres-body">
+            ${it.wins ? `<p><strong>Funcionou:</strong> ${escapeHtml(it.wins)}</p>` : ''}
+            ${it.improve ? `<p><strong>Melhorar:</strong> ${escapeHtml(it.improve)}</p>` : ''}
+            <div class="pres-actions-row" style="margin-top:.4rem">
+              <button class="btn" data-edit="${it.id}">Editar</button>
+              <button class="btn warn" data-del="${it.id}">Remover</button>
+            </div>
+          </div>
+        `;
+        el.querySelector('[data-edit]').addEventListener('click', () => presPopulateForm(it));
+        el.querySelector('[data-del]').addEventListener('click', () => presDelete(it.id));
+        list.appendChild(el);
+      });
+    }
+    function bindPresentations(){
+      const form = $('presForm');
+      if (form) form.addEventListener('submit', presHandleSubmit);
+      const cancel = $('presCancel'); if (cancel) cancel.addEventListener('click', presResetForm);
+      // default date
+      const di = $('presDate'); if (di && !di.value) di.value = todayKey();
+    }
+
+
+    // ---------------- INIT ----------------
+    function init(){
+      loadState();
+      recomputeStreak();
+      bindNav();
+      bindTheme();
+      bindExport();
+      bindStreakActions();
+      bindPillars();
+      bindNotes();
+      bindChecks();
+      renderWeekSelect();
+      renderAudiencesOverview();
+      loadGlossary();
+      bindGlossaryToolbar();
+      renderGlossary();
+      renderWeekDetail(currentWeekIndex());
+      renderAll();
+      // novos módulos
+      bindBackupImport();
+      renderHistory();
+      bindFlashcards();
+      renderFlashcards();
+      bindPresentations();
+      renderPresentations();
+    }
+
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</body>
+</html>
